@@ -138,6 +138,13 @@
   #duzenleForm button:hover {
     background-color: #e67600;
   }
+
+  /* PDF butonu alanı */
+  #pdfAlBtn {
+    max-width: 480px;
+    margin: 20px auto;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -168,7 +175,7 @@
   <label for="bit">Bitiş Derinliği (m):</label>
   <input type="number" id="bit" min="0" step="0.1" required />
 
-  <button onclick="ekle()">Katman Ekle</button>
+  <button type="button" onclick="ekle()">Katman Ekle</button>
 </div>
 
 <div id="kesit"></div>
@@ -198,12 +205,12 @@
   <label for="d_bit">Bitiş Derinliği (m):</label>
   <input type="number" id="d_bit" min="0" step="0.1" required />
 
-  <button onclick="kaydetDuzenle()">Kaydet</button>
-  <button onclick="iptalDuzenle()" style="background:#888; margin-left:10px;">İptal</button>
+  <button type="button" onclick="kaydetDuzenle()">Kaydet</button>
+  <button type="button" onclick="iptalDuzenle()" style="background:#888; margin-left:10px;">İptal</button>
 </div>
 
-<div style="max-width:480px; margin:20px auto; text-align:center;">
-  <button onclick="pdfAl()" style="background:#28a745;">PDF Olarak Kaydet</button>
+<div id="pdfAlBtn">
+  <button type="button" onclick="pdfAl()" style="background:#28a745;">PDF Olarak Kaydet</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -211,60 +218,4 @@
   const birimGorselleri = {
     bitkisel: ["Bitkisel Toprak", "https://upload.wikimedia.org/wikipedia/commons/8/83/Humus_toprak.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Humus_toprak.jpg/40px-Humus_toprak.jpg"],
     aluvyon: ["Alüvyon", "https://upload.wikimedia.org/wikipedia/commons/4/48/Aluvium.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Aluvium.jpg/40px-Aluvium.jpg"],
-    kil: ["Kil", "https://upload.wikimedia.org/wikipedia/commons/5/55/Clay_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Clay_texture.jpg/40px-Clay_texture.jpg"],
-    silt: ["Silt", "https://upload.wikimedia.org/wikipedia/commons/2/21/Silt_soil.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Silt_soil.jpg/40px-Silt_soil.jpg"],
-    kum: ["Kum", "https://upload.wikimedia.org/wikipedia/commons/e/ef/Sand_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Sand_texture.jpg/40px-Sand_texture.jpg"],
-    cakil: ["Çakıl", "https://upload.wikimedia.org/wikipedia/commons/2/23/Gravel_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Gravel_texture.jpg/40px-Gravel_texture.jpg"],
-    kil_kum: ["Kil + Kum", "https://upload.wikimedia.org/wikipedia/commons/a/ab/Silty_clay_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Silty_clay_texture.jpg/40px-Silty_clay_texture.jpg"],
-    kum_cakil: ["Kum + Çakıl", "https://upload.wikimedia.org/wikipedia/commons/0/01/Sand_and_gravel.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Sand_and_gravel.jpg/40px-Sand_and_gravel.jpg"],
-    kirectasi: ["Kireçtaşı", "https://upload.wikimedia.org/wikipedia/commons/2/2d/Limestone_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Limestone_texture.jpg/40px-Limestone_texture.jpg"],
-    sist: ["Şist", "https://upload.wikimedia.org/wikipedia/commons/f/fe/Schist_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Schist_texture.jpg/40px-Schist_texture.jpg"],
-    volkanit: ["Volkanit", "https://upload.wikimedia.org/wikipedia/commons/6/65/Basalt_volcanic_rock.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Basalt_volcanic_rock.jpg/40px-Basalt_volcanic_rock.jpg"],
-    metakirintili: ["Metakırıntılı Kayaç", "https://upload.wikimedia.org/wikipedia/commons/e/e2/Greywacke_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Greywacke_texture.jpg/40px-Greywacke_texture.jpg"],
-    granit: ["Granit", "https://upload.wikimedia.org/wikipedia/commons/e/e0/Granite_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Granite_texture.jpg/40px-Granite_texture.jpg"]
-  };
-
-  let duzenlenenKatman = null;
-
-  function ekle() {
-    const birim = document.getElementById("birim").value;
-    const bas = parseFloat(document.getElementById("bas").value);
-    const bit = parseFloat(document.getElementById("bit").value);
-
-    if (isNaN(bas) || isNaN(bit)) {
-      alert("Lütfen geçerli sayısal derinlik değerleri girin.");
-      return;
-    }
-    if (bit <= bas) {
-      alert("Bitiş derinliği başlangıç derinliğinden büyük olmalıdır.");
-      return;
-    }
-
-    // Her metre 10px yükseklik
-    const yukseklikPx = (bit - bas) * 10;
-    const [ad, url, iconUrl] = birimGorselleri[birim];
-
-    const katman = document.createElement("div");
-    katman.className = "katman";
-    katman.style.height = yukseklikPx + "px";
-    katman.style.backgroundImage = `url(${url})`;
-    katman.dataset.birim = birim;
-    katman.dataset.bas = bas;
-    katman.dataset.bit = bit;
-
-    const iconImg = document.createElement("img");
-    iconImg.src = iconUrl;
-    iconImg.className = "icon";
-    iconImg.alt = ad + " ikonu";
-    katman.appendChild(iconImg);
-
-    const yazi = document.createElement("span");
-    yazi.textContent = `${ad} (${bas}m - ${bit}m)`;
-    katman.appendChild(yazi);
-
-    const tools = document.createElement("div");
-    tools.className = "tools";
-    tools.innerHTML = `
-      <button onclick="duzenle(this)">Düzenle</button>
-      <button onclick="yukari(this)">↑</button>
-      <button onclick="asagi(this)">↓</button
+    kil: ["Kil",
