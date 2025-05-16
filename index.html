@@ -18,6 +18,7 @@
       display: flex;
       gap: 20px;
       margin-top: 20px;
+      align-items: flex-start;
     }
     #kesit {
       border: 3px solid #000;
@@ -26,7 +27,7 @@
     .katman {
       width: 100%;
       position: relative;
-      border-bottom: 1px solid #999;
+      border: 3px solid;
     }
     .katman img {
       width: 100%;
@@ -40,8 +41,23 @@
       padding-left: 10px;
     }
     .bilgi-item {
-      margin-bottom: 8px;
       font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      box-sizing: border-box;
+      padding: 5px;
+      cursor: move;
+    }
+    .sil-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -91,15 +107,36 @@ const gorseller = {
   "Granit": "https://i.imgur.com/jLCpzYo.jpg"
 };
 
+const renkler = [
+  "#FF5733", "#33C1FF", "#33FF57", "#FFC300",
+  "#A633FF", "#FF33A1", "#33FFF6", "#B6FF33",
+  "#FF8F33", "#8D33FF", "#33FF88"
+];
+
 let katmanlar = [];
 
 function ekle() {
   const birim = document.getElementById('birim').value;
-  const bas = parseFloat(document.getElementById('bas').value);
-  const bit = parseFloat(document.getElementById('bit').value);
-  if (isNaN(bas) || isNaN(bit) || bit <= bas) return alert("Geçersiz değerler");
+  const basInput = document.getElementById('bas');
+  const bitInput = document.getElementById('bit');
+  const bas = parseFloat(basInput.value);
+  const bit = parseFloat(bitInput.value);
+
+  if (isNaN(bas) || isNaN(bit) || bit <= bas) {
+    alert("Geçersiz değerler");
+    return;
+  }
+
   katmanlar.push({ birim, bas, bit });
   katmanlar.sort((a, b) => a.bas - b.bas);
+  guncelle();
+
+  basInput.value = bit;
+  bitInput.value = "";
+}
+
+function sil(index) {
+  katmanlar.splice(index, 1);
   guncelle();
 }
 
@@ -109,13 +146,15 @@ function guncelle() {
   kesit.innerHTML = '';
   bilgi.innerHTML = '';
 
-  const toplamDerinlik = Math.max(...katmanlar.map(k => k.bit));
+  const toplamDerinlik = Math.max(...katmanlar.map(k => k.bit), 1);
 
-  katmanlar.forEach(k => {
+  katmanlar.forEach((k, i) => {
+    const yuk = ((k.bit - k.bas) / toplamDerinlik) * 600;
+
     const div = document.createElement('div');
     div.className = 'katman';
-    const yuk = ((k.bit - k.bas) / toplamDerinlik) * 600;
     div.style.height = yuk + 'px';
+    div.style.borderColor = renkler[i % renkler.length];
 
     const img = document.createElement('img');
     img.src = gorseller[k.birim] || '';
@@ -124,8 +163,29 @@ function guncelle() {
 
     const bilgiDiv = document.createElement('div');
     bilgiDiv.className = 'bilgi-item';
-    bilgiDiv.innerHTML = `<b>${k.birim}</b><br>${k.bas} - ${k.bit} m`;
+    bilgiDiv.setAttribute('draggable', 'true');
+    bilgiDiv.style.height = yuk + 'px';
+    bilgiDiv.dataset.index = i;
+    bilgiDiv.innerHTML = `<div><b>${k.birim}</b><br>${k.bas} - ${k.bit} m</div><button class="sil-btn" onclick="sil(${i})">Sil</button>`;
     bilgi.appendChild(bilgiDiv);
+  });
+
+  // Sürükle-bırak sıralama
+  bilgi.querySelectorAll('.bilgi-item').forEach(item => {
+    item.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', e.target.dataset.index);
+    });
+
+    item.addEventListener('dragover', e => e.preventDefault());
+
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      const from = +e.dataTransfer.getData('text/plain');
+      const to = +e.target.closest('.bilgi-item').dataset.index;
+      const moved = katmanlar.splice(from, 1)[0];
+      katmanlar.splice(to, 0, moved);
+      guncelle();
+    });
   });
 }
 
