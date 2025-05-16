@@ -1,55 +1,76 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Litolojik Birim Girişi</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Litolojik Kesit Oluşturucu</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      background: #f2f2f2;
+      background: #f4f4f4;
     }
     h2 {
       text-align: center;
     }
-    .form {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    select, button {
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px;
-    }
-    .liste {
+    .form, .buttons {
+      max-width: 400px;
+      margin: 10px auto;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
     }
-    .birim-karti {
-      display: flex;
-      align-items: center;
-      background: white;
+    input, select, button {
       padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 16px;
     }
-    .birim-karti img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-right: 15px;
+    #kesit {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 400px;
+      margin-inline: auto;
+      border: 1px solid #ccc;
+      background: white;
+    }
+    .katman {
+      position: relative;
+      width: 100%;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      border: 3px solid #333;
+      box-sizing: border-box;
+    }
+    .katman span {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 2px 5px;
+      font-size: 14px;
+      bottom: 5px;
+      left: 5px;
+      border-radius: 4px;
+    }
+    .tools {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      display: flex;
+      gap: 5px;
+    }
+    .tools button {
+      padding: 2px 5px;
+      font-size: 12px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-<h2>Litolojik Birim Girişi</h2>
+<h2>Litolojik Kesit Oluşturucu</h2>
 
 <div class="form">
-  <select id="litoloji">
+  <select id="birim">
     <option value="bitkisel">Bitkisel Toprak</option>
     <option value="aluvyon">Alüvyon</option>
     <option value="kil">Kil</option>
@@ -64,46 +85,119 @@
     <option value="metakirintili">Metakırıntılı Kayaç</option>
     <option value="granit">Granit</option>
   </select>
+  <input type="number" id="bas" placeholder="Başlangıç derinliği (m)" />
+  <input type="number" id="bit" placeholder="Bitiş derinliği (m)" />
   <button onclick="ekle()">Ekle</button>
 </div>
 
-<div class="liste" id="liste"></div>
+<div class="buttons">
+  <button onclick="exportPDF()">PDF Olarak Kaydet</button>
+</div>
+
+<div id="kesit"></div>
 
 <script>
-  const litolojiVeri = {
-    bitkisel: { ad: "Bitkisel Toprak", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Humus_toprak.jpg/640px-Humus_toprak.jpg" },
-    aluvyon: { ad: "Alüvyon", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Aluvium.jpg/640px-Aluvium.jpg" },
-    kil: { ad: "Kil", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Clay_texture.jpg/640px-Clay_texture.jpg" },
-    silt: { ad: "Silt", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Silt_soil.jpg/640px-Silt_soil.jpg" },
-    kum: { ad: "Kum", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Sand_texture.jpg/640px-Sand_texture.jpg" },
-    cakil: { ad: "Çakıl", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Gravel_texture.jpg/640px-Gravel_texture.jpg" },
-    kil_kum: { ad: "Kil + Kum", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Silty_clay_texture.jpg/640px-Silty_clay_texture.jpg" },
-    kum_cakil: { ad: "Kum + Çakıl", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Sand_and_gravel.jpg/640px-Sand_and_gravel.jpg" },
-    kirectasi: { ad: "Kireçtaşı", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Limestone_texture.jpg/640px-Limestone_texture.jpg" },
-    sist: { ad: "Şist", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Schist_texture.jpg/640px-Schist_texture.jpg" },
-    volkanit: { ad: "Volkanit", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Basalt_volcanic_rock.jpg/640px-Basalt_volcanic_rock.jpg" },
-    metakirintili: { ad: "Metakırıntılı Kayaç", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Greywacke_texture.jpg/640px-Greywacke_texture.jpg" },
-    granit: { ad: "Granit", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Granite_texture.jpg/640px-Granite_texture.jpg" }
+  const birimGorselleri = {
+    bitkisel: ["Bitkisel Toprak", "https://upload.wikimedia.org/wikipedia/commons/8/83/Humus_toprak.jpg"],
+    aluvyon: ["Alüvyon", "https://upload.wikimedia.org/wikipedia/commons/4/48/Aluvium.jpg"],
+    kil: ["Kil", "https://upload.wikimedia.org/wikipedia/commons/5/55/Clay_texture.jpg"],
+    silt: ["Silt", "https://upload.wikimedia.org/wikipedia/commons/2/21/Silt_soil.jpg"],
+    kum: ["Kum", "https://upload.wikimedia.org/wikipedia/commons/e/ef/Sand_texture.jpg"],
+    cakil: ["Çakıl", "https://upload.wikimedia.org/wikipedia/commons/2/23/Gravel_texture.jpg"],
+    kil_kum: ["Kil + Kum", "https://upload.wikimedia.org/wikipedia/commons/a/ab/Silty_clay_texture.jpg"],
+    kum_cakil: ["Kum + Çakıl", "https://upload.wikimedia.org/wikipedia/commons/0/01/Sand_and_gravel.jpg"],
+    kirectasi: ["Kireçtaşı", "https://upload.wikimedia.org/wikipedia/commons/2/2d/Limestone_texture.jpg"],
+    sist: ["Şist", "https://upload.wikimedia.org/wikipedia/commons/f/fe/Schist_texture.jpg"],
+    volkanit: ["Volkanit", "https://upload.wikimedia.org/wikipedia/commons/6/65/Basalt_volcanic_rock.jpg"],
+    metakirintili: ["Metakırıntılı Kayaç", "https://upload.wikimedia.org/wikipedia/commons/e/e2/Greywacke_texture.jpg"],
+    granit: ["Granit", "https://upload.wikimedia.org/wikipedia/commons/e/e0/Granite_texture.jpg"]
   };
 
-  function ekle() {
-    const secim = document.getElementById("litoloji").value;
-    const veri = litolojiVeri[secim];
+  function ekle(birimVal = null, basVal = null, bitVal = null, düzenleDiv = null) {
+    const birim = birimVal || document.getElementById("birim").value;
+    const bas = parseFloat(basVal || document.getElementById("bas").value);
+    const bit = parseFloat(bitVal || document.getElementById("bit").value);
 
-    const kart = document.createElement("div");
-    kart.className = "birim-karti";
+    if (isNaN(bas) || isNaN(bit) || bit <= bas) {
+      alert("Geçerli derinlik girin.");
+      return;
+    }
 
-    const img = document.createElement("img");
-    img.src = veri.img;
-    img.alt = veri.ad;
+    const yukseklikPx = (bit - bas) * 10;
+    const [ad, url] = birimGorselleri[birim];
 
-    const yazi = document.createElement("div");
-    yazi.textContent = veri.ad;
+    const katman = document.createElement("div");
+    katman.className = "katman";
+    katman.style.height = yukseklikPx + "px";
+    katman.style.backgroundImage = `url(${url})`;
+    katman.dataset.birim = birim;
+    katman.dataset.bas = bas;
+    katman.dataset.bit = bit;
 
-    kart.appendChild(img);
-    kart.appendChild(yazi);
+    const yazi = document.createElement("span");
+    yazi.textContent = `${ad} (${bas}m - ${bit}m)`;
+    katman.appendChild(yazi);
 
-    document.getElementById("liste").appendChild(kart);
+    const tools = document.createElement("div");
+    tools.className = "tools";
+
+    tools.innerHTML = `
+      <button onclick="duzenle(this)">Düzenle</button>
+      <button onclick="yukari(this)">↑</button>
+      <button onclick="asagi(this)">↓</button>
+      <button onclick="sil(this)">Sil</button>
+    `;
+    katman.appendChild(tools);
+
+    if (düzenleDiv) {
+      düzenleDiv.replaceWith(katman);
+    } else {
+      document.getElementById("kesit").appendChild(katman);
+    }
+
+    document.getElementById("bas").value = "";
+    document.getElementById("bit").value = "";
+  }
+
+  function sil(btn) {
+    btn.closest(".katman").remove();
+  }
+
+  function yukari(btn) {
+    const div = btn.closest(".katman");
+    const prev = div.previousElementSibling;
+    if (prev) div.parentNode.insertBefore(div, prev);
+  }
+
+  function asagi(btn) {
+    const div = btn.closest(".katman");
+    const next = div.nextElementSibling;
+    if (next) div.parentNode.insertBefore(next, div);
+  }
+
+  function duzenle(btn) {
+    const div = btn.closest(".katman");
+    const birim = div.dataset.birim;
+    const bas = div.dataset.bas;
+    const bit = div.dataset.bit;
+
+    document.getElementById("birim").value = birim;
+    document.getElementById("bas").value = bas;
+    document.getElementById("bit").value = bit;
+
+    ekle(birim, bas, bit, div);
+  }
+
+  function exportPDF() {
+    const element = document.getElementById("kesit");
+    const opt = {
+      margin:       0,
+      filename:     'litolojik-kesit.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
   }
 </script>
 
