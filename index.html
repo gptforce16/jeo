@@ -10,55 +10,38 @@
       font-family: sans-serif;
       padding: 20px;
     }
-    label {
+    label, input, select, button {
+      margin: 5px 0;
       display: block;
-      margin-bottom: 8px;
     }
-    input {
-      margin-right: 10px;
+    #container {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    #kesit {
+      border: 3px solid #000;
+      width: 200px;
     }
     .katman {
-      border: 2px solid #000;
-      margin-bottom: 4px;
+      width: 100%;
       position: relative;
-      color: #000;
-      text-align: center;
-      overflow: hidden;
+      border-bottom: 1px solid #999;
     }
     .katman img {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.3;
-      z-index: 0;
+      display: block;
     }
-    .katman span {
-      position: relative;
-      z-index: 2;
-      font-weight: bold;
-      background: rgba(255,255,255,0.6);
-      display: inline-block;
-      padding: 2px 8px;
-      margin-top: 5px;
+    #bilgi {
+      flex: 1;
+      border-left: 2px dashed #888;
+      padding-left: 10px;
     }
-    .tools {
-      position: absolute;
-      right: 5px;
-      top: 5px;
-      z-index: 3;
-    }
-    .tools button {
-      margin-left: 3px;
-    }
-    #kesit {
-      border: 3px solid #333;
-      width: 100%;
-      max-width: 400px;
-      margin-top: 20px;
-      padding: 5px;
+    .bilgi-item {
+      margin-bottom: 8px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -88,35 +71,12 @@
   <button onclick="pdfAl()">PDF Kaydet</button>
 </div>
 
-<div id="duzenleForm" style="display:none; margin-top:10px;">
-  <h4>Düzenle</h4>
-  <label>Birim:
-    <select id="d_birim">
-      <option>Bitkisel Toprak</option>
-      <option>Alüvyon</option>
-      <option>Kil</option>
-      <option>Silt</option>
-      <option>Kum</option>
-      <option>Çakıl</option>
-      <option>Kireçtaşı</option>
-      <option>Şist</option>
-      <option>Volkanit</option>
-      <option>Metakırıntılı Kayaç</option>
-      <option>Granit</option>
-    </select>
-  </label>
-  <label>Başlangıç: <input type="number" id="d_bas" step="0.1"></label>
-  <label>Bitiş: <input type="number" id="d_bit" step="0.1"></label>
-  <button onclick="kaydetDuzenle()">Kaydet</button>
-  <button onclick="iptalDuzenle()">İptal</button>
+<div id="container">
+  <div id="kesit"></div>
+  <div id="bilgi"></div>
 </div>
 
-<div id="kesit"></div>
-
 <script>
-let katmanlar = [];
-let seciliIndex = null;
-
 const gorseller = {
   "Bitkisel Toprak": "https://i.imgur.com/YLQSK4K.jpg",
   "Alüvyon": "https://i.imgur.com/XgTFj7K.jpg",
@@ -131,101 +91,52 @@ const gorseller = {
   "Granit": "https://i.imgur.com/jLCpzYo.jpg"
 };
 
+let katmanlar = [];
+
 function ekle() {
   const birim = document.getElementById('birim').value;
   const bas = parseFloat(document.getElementById('bas').value);
   const bit = parseFloat(document.getElementById('bit').value);
-  if (isNaN(bas) || isNaN(bit) || bit <= bas) return alert("Geçersiz derinlik aralığı");
+  if (isNaN(bas) || isNaN(bit) || bit <= bas) return alert("Geçersiz değerler");
   katmanlar.push({ birim, bas, bit });
-  katmanlar.sort((a,b) => a.bas - b.bas);
-  guncelleKesit();
+  katmanlar.sort((a, b) => a.bas - b.bas);
+  guncelle();
 }
 
-function guncelleKesit() {
-  const kesit = document.getElementById("kesit");
-  kesit.innerHTML = "";
-  const maxYuk = Math.max(...katmanlar.map(k => k.bit));
-  katmanlar.forEach((k, i) => {
-    const div = document.createElement("div");
-    const yukseklik = ((k.bit - k.bas) / maxYuk) * 500;
-    div.className = "katman";
-    div.style.height = yukseklik + "px";
-    div.style.borderColor = "#444";
+function guncelle() {
+  const kesit = document.getElementById('kesit');
+  const bilgi = document.getElementById('bilgi');
+  kesit.innerHTML = '';
+  bilgi.innerHTML = '';
 
-    const img = document.createElement("img");
-    img.src = gorseller[k.birim] || "";
+  const toplamDerinlik = Math.max(...katmanlar.map(k => k.bit));
+
+  katmanlar.forEach(k => {
+    const div = document.createElement('div');
+    div.className = 'katman';
+    const yuk = ((k.bit - k.bas) / toplamDerinlik) * 600;
+    div.style.height = yuk + 'px';
+
+    const img = document.createElement('img');
+    img.src = gorseller[k.birim] || '';
     div.appendChild(img);
-
-    const span = document.createElement("span");
-    span.innerHTML = `${k.bas} - ${k.bit} m<br>${k.birim}`;
-    div.appendChild(span);
-
-    const tools = document.createElement("div");
-    tools.className = "tools";
-    tools.innerHTML = `
-      <button onclick="duzenle(${i})">Düzenle</button>
-      <button onclick="sil(${i})">Sil</button>
-      <button onclick="yukari(${i})">↑</button>
-      <button onclick="asagi(${i})">↓</button>`;
-    div.appendChild(tools);
-
     kesit.appendChild(div);
+
+    const bilgiDiv = document.createElement('div');
+    bilgiDiv.className = 'bilgi-item';
+    bilgiDiv.innerHTML = `<b>${k.birim}</b><br>${k.bas} - ${k.bit} m`;
+    bilgi.appendChild(bilgiDiv);
   });
 }
 
-function sil(i) {
-  if (confirm("Katman silinsin mi?")) {
-    katmanlar.splice(i, 1);
-    guncelleKesit();
-  }
-}
-
-function duzenle(i) {
-  seciliIndex = i;
-  const k = katmanlar[i];
-  document.getElementById("d_birim").value = k.birim;
-  document.getElementById("d_bas").value = k.bas;
-  document.getElementById("d_bit").value = k.bit;
-  document.getElementById("duzenleForm").style.display = "block";
-}
-
-function kaydetDuzenle() {
-  const birim = document.getElementById('d_birim').value;
-  const bas = parseFloat(document.getElementById('d_bas').value);
-  const bit = parseFloat(document.getElementById('d_bit').value);
-  if (isNaN(bas) || isNaN(bit) || bit <= bas) return alert("Geçersiz derinlikler");
-  katmanlar[seciliIndex] = { birim, bas, bit };
-  katmanlar.sort((a,b) => a.bas - b.bas);
-  document.getElementById("duzenleForm").style.display = "none";
-  guncelleKesit();
-}
-
-function iptalDuzenle() {
-  document.getElementById("duzenleForm").style.display = "none";
-}
-
-function yukari(i) {
-  if (i > 0) {
-    [katmanlar[i], katmanlar[i - 1]] = [katmanlar[i - 1], katmanlar[i]];
-    guncelleKesit();
-  }
-}
-
-function asagi(i) {
-  if (i < katmanlar.length - 1) {
-    [katmanlar[i], katmanlar[i + 1]] = [katmanlar[i + 1], katmanlar[i]];
-    guncelleKesit();
-  }
-}
-
 function pdfAl() {
-  const element = document.getElementById("kesit");
+  const element = document.getElementById("container");
   const opt = {
-    margin: 0.2,
+    margin: 0.5,
     filename: 'litolojik_kesit.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
   };
   html2pdf().set(opt).from(element).save();
 }
