@@ -62,6 +62,13 @@
             margin-bottom: 5px;
             background-color: #f9f9f9;
         }
+        .layer-info {
+            flex-grow: 1;
+        }
+        .layer-actions {
+            display: flex;
+            gap: 5px;
+        }
         .section-container {
             display: flex;
             margin-top: 20px;
@@ -107,16 +114,24 @@
         }
         .delete-btn {
             background-color: #f44336;
-            margin-left: 10px;
+        }
+        .edit-btn {
+            background-color: #2196F3;
         }
         .delete-btn:hover {
             background-color: #d32f2f;
+        }
+        .edit-btn:hover {
+            background-color: #0b7dda;
         }
         .pattern-options {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
             margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
         }
         .pattern-option {
             width: 50px;
@@ -126,6 +141,36 @@
         }
         .pattern-option.selected {
             border: 2px solid #4CAF50;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
         }
     </style>
 </head>
@@ -155,6 +200,8 @@
                     </div>
                 </div>
                 <button id="addLayerBtn">Katman Ekle</button>
+                <button id="updateLayerBtn" style="display:none;">Güncelle</button>
+                <button id="cancelEditBtn" style="display:none;">İptal</button>
             </div>
             
             <div class="layer-list" id="layerList">
@@ -173,8 +220,16 @@
         </div>
     </div>
 
+    <div id="patternModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Kayaç Deseni Seçimi</h2>
+            <div class="pattern-options" id="modalPatternOptions"></div>
+        </div>
+    </div>
+
     <script>
-        // Desen tanımları
+        // Genişletilmiş desen tanımları (30 farklı desen)
         const patterns = [
             { name: "Kumtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"2\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/></svg>')" },
             { name: "Kiltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a0522d\" opacity=\"0.3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
@@ -183,32 +238,112 @@
             { name: "Kum", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f4a460\"/><circle cx=\"1\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"4\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"7\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"2\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"5\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"6\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/></svg>')" },
             { name: "Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23deb887\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
             { name: "Marn", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23696969\" stroke-width=\"0.5\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Bazalt", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23222222\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23555\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23444\"/></svg>')" }
+            { name: "Bazalt", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23222222\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23555\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23444\"/></svg>')" },
+            { name: "Granit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23996633\"/><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23cc9966\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23cc9966\"/><circle cx=\"3\" cy=\"7\" r=\"0.6\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"6\" r=\"0.9\" fill=\"%23cc9966\"/></svg>')" },
+            { name: "Andezit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><path d=\"M2,2 L6,2 L6,6 L2,6 Z\" fill=\"none\" stroke=\"%23999999\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23777777\"/></svg>')" },
+            { name: "Diyabaz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23333333\"/><path d=\"M1,1 L7,7 M1,7 L7,1\" stroke=\"%23555555\" stroke-width=\"0.7\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23555555\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Gnays", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,0 L8,8 M0,4 L8,4 M0,8 L8,0\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/></svg>')" },
+            { name: "Mikaşist", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23b3b3b3\"/><path d=\"M0,0 L8,8 M0,2 L8,10 M0,4 L8,12\" stroke=\"%23ffffff\" stroke-width=\"0.5\" transform=\"translate(0,-2)\"/></svg>')" },
+            { name: "Kuvarsit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Mermer", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23ffffff\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%234d4d4d\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23666666\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.6\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')" },
+            { name: "Kömür", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%231a1a1a\"/><path d=\"M2,2 L6,2 L5,6 L3,6 Z\" fill=\"%23333333\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23222222\"/></svg>')" },
+            { name: "Jips", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f0f0f0\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Anhidrit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23b3b3b3\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23b3b3b3\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Tuz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5f5\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Kalker", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6fa\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"4\" cy=\"4\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"2\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/></svg>')" },
+            { name: "Dolomit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3e6\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Killi Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23a0a0a0\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Silt Taşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23c0c0c0\"/><circle cx=\"2\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"4\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"2\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/></svg>')" },
+            { name: "Kumlu Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d2b48c\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/><circle cx=\"2\" cy=\"3\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"6\" cy=\"5\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"4\" cy=\"7\" r=\"0.3\" fill=\"%23a0522d\"/></svg>')" },
+            { name: "Çakıltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"1.2\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"1\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')" },
+            { name: "Volkanik Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><circle cx=\"2\" cy=\"2\" r=\"0.7\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"3\" r=\"0.5\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"5\" r=\"0.6\" fill=\"%23999999\"/><circle cx=\"3\" cy=\"7\" r=\"0.4\" fill=\"%23999999\"/><circle cx=\"7\" cy=\"6\" r=\"0.8\" fill=\"%23999999\"/></svg>')" },
+            { name: "Obsidyen", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23000000\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23333333\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23333333\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Pomza", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23ffffff\"/><circle cx=\"4\" cy=\"4\" r=\"0.6\" fill=\"%23ffffff\"/><circle cx=\"2\" cy=\"6\" r=\"0.7\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"6\" r=\"0.4\" fill=\"%23ffffff\"/></svg>')" }
         ];
 
-        // Seçili desen
+        // Seçili desen ve düzenleme durumu
         let selectedPatternIndex = 0;
+        let editingLayerIndex = -1;
         const patternOptions = document.getElementById('patternOptions');
+        const modalPatternOptions = document.getElementById('modalPatternOptions');
+        const modal = document.getElementById('patternModal');
+        const span = document.getElementsByClassName("close")[0];
         
         // Desen seçeneklerini oluştur
-        patterns.forEach((pattern, index) => {
-            const patternDiv = document.createElement('div');
-            patternDiv.className = `pattern-option ${index === selectedPatternIndex ? 'selected' : ''}`;
-            patternDiv.title = pattern.name;
-            patternDiv.style.backgroundImage = pattern.pattern;
-            patternDiv.onclick = () => {
-                document.querySelectorAll('.pattern-option').forEach(opt => opt.classList.remove('selected'));
-                patternDiv.classList.add('selected');
-                selectedPatternIndex = index;
-            };
-            patternOptions.appendChild(patternDiv);
-        });
-
+        function createPatternOptions(container, count) {
+            container.innerHTML = '';
+            const showCount = Math.min(count, patterns.length);
+            
+            for (let i = 0; i < showCount; i++) {
+                const pattern = patterns[i];
+                const patternDiv = document.createElement('div');
+                patternDiv.className = `pattern-option ${i === selectedPatternIndex ? 'selected' : ''}`;
+                patternDiv.title = pattern.name;
+                patternDiv.style.backgroundImage = pattern.pattern;
+                patternDiv.onclick = () => {
+                    document.querySelectorAll(`#${container.id} .pattern-option`).forEach(opt => opt.classList.remove('selected'));
+                    patternDiv.classList.add('selected');
+                    selectedPatternIndex = i;
+                    
+                    if (container.id === 'modalPatternOptions') {
+                        modal.style.display = "none";
+                    }
+                };
+                container.appendChild(patternDiv);
+            }
+            
+            if (patterns.length > count && container.id === 'patternOptions') {
+                const moreDiv = document.createElement('div');
+                moreDiv.className = 'pattern-option';
+                moreDiv.innerHTML = '+';
+                moreDiv.title = "Daha fazla desen göster";
+                moreDiv.style.display = "flex";
+                moreDiv.style.justifyContent = "center";
+                moreDiv.style.alignItems = "center";
+                moreDiv.style.fontSize = "20px";
+                moreDiv.style.backgroundColor = "#f0f0f0";
+                moreDiv.onclick = () => {
+                    createPatternOptions(modalPatternOptions, patterns.length);
+                    modal.style.display = "block";
+                };
+                container.appendChild(moreDiv);
+            }
+        }
+        
+        createPatternOptions(patternOptions, 8);
+        
+        // Modal kapatma
+        span.onclick = function() {
+            modal.style.display = "none";
+        };
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+        
         // Katman listesi
         const layers = [];
         
         // Katman ekleme fonksiyonu
         document.getElementById('addLayerBtn').onclick = function() {
+            addOrUpdateLayer();
+        };
+        
+        // Katman güncelleme fonksiyonu
+        document.getElementById('updateLayerBtn').onclick = function() {
+            addOrUpdateLayer();
+        };
+        
+        // Düzenleme iptal fonksiyonu
+        document.getElementById('cancelEditBtn').onclick = function() {
+            cancelEdit();
+        };
+        
+        function addOrUpdateLayer() {
             const layerName = document.getElementById('layerName').value;
             const startDepth = parseFloat(document.getElementById('startDepth').value);
             const endDepth = parseFloat(document.getElementById('endDepth').value);
@@ -225,14 +360,38 @@
                 pattern: patterns[selectedPatternIndex]
             };
             
-            layers.push(layer);
+            if (editingLayerIndex >= 0) {
+                // Güncelleme modunda
+                layers[editingLayerIndex] = layer;
+                cancelEdit();
+            } else {
+                // Yeni ekleme modunda
+                layers.push(layer);
+            }
+            
             updateLayerList();
             
             // Formu temizle
             document.getElementById('layerName').value = '';
             document.getElementById('startDepth').value = endDepth;
             document.getElementById('endDepth').value = '';
-        };
+            selectedPatternIndex = 0;
+            createPatternOptions(patternOptions, 8);
+        }
+        
+        function cancelEdit() {
+            editingLayerIndex = -1;
+            document.getElementById('addLayerBtn').style.display = 'inline-block';
+            document.getElementById('updateLayerBtn').style.display = 'none';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            
+            // Formu temizle
+            document.getElementById('layerName').value = '';
+            document.getElementById('startDepth').value = '';
+            document.getElementById('endDepth').value = '';
+            selectedPatternIndex = 0;
+            createPatternOptions(patternOptions, 8);
+        }
         
         // Katman listesini güncelle
         function updateLayerList() {
@@ -248,12 +407,15 @@
                 const layerItem = document.createElement('div');
                 layerItem.className = 'layer-item';
                 layerItem.innerHTML = `
-                    <div>
+                    <div class="layer-info">
                         <strong>${layer.name}</strong> - 
                         ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m) - 
                         ${layer.pattern.name}
                     </div>
-                    <button class="delete-btn" data-index="${index}">Sil</button>
+                    <div class="layer-actions">
+                        <button class="edit-btn" data-index="${index}">Düzenle</button>
+                        <button class="delete-btn" data-index="${index}">Sil</button>
+                    </div>
                 `;
                 layerList.appendChild(layerItem);
             });
@@ -264,6 +426,35 @@
                     const index = parseInt(this.getAttribute('data-index'));
                     layers.splice(index, 1);
                     updateLayerList();
+                    
+                    if (editingLayerIndex === index) {
+                        cancelEdit();
+                    } else if (editingLayerIndex > index) {
+                        editingLayerIndex--;
+                    }
+                };
+            });
+            
+            // Düzenle butonlarına event ekle
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const layer = layers[index];
+                    
+                    // Formu doldur
+                    document.getElementById('layerName').value = layer.name;
+                    document.getElementById('startDepth').value = layer.startDepth;
+                    document.getElementById('endDepth').value = layer.endDepth;
+                    
+                    // Deseni seç
+                    selectedPatternIndex = patterns.findIndex(p => p.name === layer.pattern.name);
+                    createPatternOptions(patternOptions, 8);
+                    
+                    // Düzenleme moduna geç
+                    editingLayerIndex = index;
+                    document.getElementById('addLayerBtn').style.display = 'none';
+                    document.getElementById('updateLayerBtn').style.display = 'inline-block';
+                    document.getElementById('cancelEditBtn').style.display = 'inline-block';
                 };
             });
         }
