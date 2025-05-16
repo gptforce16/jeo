@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Litolojik Birim Girişi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    h2 {
+      text-align: center;
+    }
+    .form {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    select, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+    }
+    .liste {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .birim-karti {
+      display: flex;
+      align-items: center;
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .birim-karti img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Litolojik Birim Girişi</h2>
+
+<div class="form">
+  <select id="litoloji">
+    <option value="bitkisel">Bitkisel Toprak</option>
+    <option value="aluvyon">Alüvyon</option>
+    <option value="kil">Kil</option>
+    <option value="silt">Silt</option>
+    <option value="kum">Kum</option>
+    <option value="cakil">Çakıl</option>
+    <option value="kil_kum">Kil + Kum</option>
+    <option value="kum_cakil">Kum + Çakıl</option>
+    <option value="kirectasi">Kireçtaşı</option>
+    <option value="sist">Şist</option>
+    <option value="volkanit">Volkanit</option>
+    <option value="metakirintili">Metakırıntılı Kayaç</option>
+    <option value="granit">Granit</option>
+  </select>
+  <button onclick="ekle()">Ekle</button>
+</div>
+
+<div class="liste" id="liste"></div>
+
+<script>
+  const litolojiVeri = {
+    bitkisel: { ad: "Bitkisel Toprak", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Humus_toprak.jpg/640px-Humus_toprak.jpg" },
+    aluvyon: { ad: "Alüvyon", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Aluvium.jpg/640px-Aluvium.jpg" },
+    kil: { ad: "Kil", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Clay_texture.jpg/640px-Clay_texture.jpg" },
+    silt: { ad: "Silt", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Silt_soil.jpg/640px-Silt_soil.jpg" },
+    kum: { ad: "Kum", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Sand_texture.jpg/640px-Sand_texture.jpg" },
+    cakil: { ad: "Çakıl", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Gravel_texture.jpg/640px-Gravel_texture.jpg" },
+    kil_kum: { ad: "Kil + Kum", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Silty_clay_texture.jpg/640px-Silty_clay_texture.jpg" },
+    kum_cakil: { ad: "Kum + Çakıl", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Sand_and_gravel.jpg/640px-Sand_and_gravel.jpg" },
+    kirectasi: { ad: "Kireçtaşı", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Limestone_texture.jpg/640px-Limestone_texture.jpg" },
+    sist: { ad: "Şist", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Schist_texture.jpg/640px-Schist_texture.jpg" },
+    volkanit: { ad: "Volkanit", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Basalt_volcanic_rock.jpg/640px-Basalt_volcanic_rock.jpg" },
+    metakirintili: { ad: "Metakırıntılı Kayaç", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Greywacke_texture.jpg/640px-Greywacke_texture.jpg" },
+    granit: { ad: "Granit", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Granite_texture.jpg/640px-Granite_texture.jpg" }
+  };
+
+  function ekle() {
+    const secim = document.getElementById("litoloji").value;
+    const veri = litolojiVeri[secim];
+
+    const kart = document.createElement("div");
+    kart.className = "birim-karti";
+
+    const img = document.createElement("img");
+    img.src = veri.img;
+    img.alt = veri.ad;
+
+    const yazi = document.createElement("div");
+    yazi.textContent = veri.ad;
+
+    kart.appendChild(img);
+    kart.appendChild(yazi);
+
+    document.getElementById("liste").appendChild(kart);
+  }
+</script>
+
+</body>
+</html>
