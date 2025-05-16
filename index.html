@@ -425,20 +425,16 @@ function ekle() {
   let bas = parseFloat(basInput.value);
   let bit = parseFloat(bitInput.value);
 
-  // Otomatik derinlik ayarı
+  // Otomatik derinlik ayarı - HER ZAMAN bir önceki katmanın bitişinden başlayacak
   if (isNaN(bas)) {
     bas = katmanlar.length > 0 ? katmanlar[katmanlar.length-1].bit : 0;
     basInput.value = bas;
   }
   
-  if (isNaN(bit)) {
-    bit = bas + 1.0;
+  // Bitiş derinliği başlangıçtan küçükse veya boşsa otomatik ayarla
+  if (isNaN(bit) || bit <= bas) {
+    bit = bas + 1.0; // Varsayılan 1m kalınlık
     bitInput.value = bit;
-  }
-
-  if (bit <= bas) {
-    alert("Bitiş derinliği başlangıçtan büyük olmalıdır!");
-    return;
   }
 
   // Yeni katmanı ekle
@@ -456,11 +452,11 @@ function ekle() {
     aktifKatmanIndex = null;
     document.getElementById('editBtn').disabled = true;
   } else {
-    // Yeni ekleme modunda
+    // Yeni ekleme modunda - HER ZAMAN sona ekle
     katmanlar.push(yeniKatman);
   }
   
-  katmanlar.sort((a, b) => a.bas - b.bas);
+  // Derinliklere göre sıralama yapmıyoruz, ekleme sırasına göre kalıyor
   guncelle();
   
   // Sonraki katman için hazırlık
@@ -540,7 +536,8 @@ function guncelle() {
     return;
   }
   
-  const toplamDerinlik = Math.max(...katmanlar.map(k => k.bit), 1);
+  // Toplam derinliği en alttaki katmanın bitiş derinliği olarak ayarla
+  const toplamDerinlik = katmanlar.length > 0 ? katmanlar[katmanlar.length-1].bit : 1;
   const olcekAraliklari = getScaleIntervals(toplamDerinlik);
   
   // Ölçek çubuğunu oluştur
@@ -555,10 +552,10 @@ function guncelle() {
   });
   
   // Katmanları oluştur
+  let toplamYukseklik = 0;
   katmanlar.forEach((k, i) => {
+    const yukseklik = ((k.bit - k.bas) / toplamDerinlik) * 100;
     const basYuzde = (k.bas / toplamDerinlik) * 100;
-    const bitYuzde = (k.bit / toplamDerinlik) * 100;
-    const yukseklik = bitYuzde - basYuzde;
     const ortaNokta = basYuzde + (yukseklik / 2);
     
     // Kesit görünümü
