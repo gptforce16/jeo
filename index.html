@@ -1,155 +1,334 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Litolojik Kesit</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 10px;
-    }
-    input, select, button {
-      margin: 5px 0;
-      padding: 6px;
-      width: 100%;
-    }
-    .form-group {
-      margin-bottom: 10px;
-    }
-    #kesit {
-      display: flex;
-      margin-top: 20px;
-      border-left: 2px solid #000;
-      border-right: 2px solid #000;
-      position: relative;
-      width: 100%;
-      max-width: 600px;
-    }
-    .labels {
-      width: 150px;
-      border-right: 1px solid #000;
-    }
-    .desenler {
-      flex: 1;
-    }
-    .katman {
-      display: flex;
-      width: 100%;
-    }
-    .katman-label {
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-bottom: 1px solid #ccc;
-      font-size: 14px;
-      padding: 5px;
-    }
-    .katman-desen {
-      background-size: 30px 30px;
-      border-bottom: 1px solid #ccc;
-    }
-    .depth-label {
-      position: absolute;
-      left: -45px;
-      font-size: 12px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeolojik Kesit Oluşturucu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .input-section, .output-section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .layer-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: flex-end;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .layer-list {
+            margin-top: 20px;
+        }
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #eee;
+            margin-bottom: 5px;
+            background-color: #f9f9f9;
+        }
+        .section-container {
+            display: flex;
+            margin-top: 20px;
+        }
+        .section-legend {
+            width: 150px;
+            border-right: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .legend-item {
+            text-align: center;
+            padding: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 1px dashed #ccc;
+        }
+        .section-pattern {
+            flex-grow: 1;
+            position: relative;
+        }
+        .pattern-layer {
+            width: 100%;
+            position: absolute;
+            left: 0;
+        }
+        .depth-mark {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            border-top: 1px solid #000;
+            text-align: center;
+            font-size: 12px;
+        }
+        .depth-label {
+            background-color: white;
+            padding: 0 5px;
+            position: relative;
+            top: -10px;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            margin-left: 10px;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        .pattern-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .pattern-option {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .pattern-option.selected {
+            border: 2px solid #4CAF50;
+        }
+    </style>
 </head>
 <body>
-
-  <h2>Litolojik Katman Ekle</h2>
-  <div class="form-group">
-    <input type="text" id="katmanAdi" placeholder="Katman Adı">
-  </div>
-  <div class="form-group">
-    <input type="number" id="baslangic" placeholder="Başlangıç Derinliği (m)">
-  </div>
-  <div class="form-group">
-    <input type="number" id="bitis" placeholder="Bitiş Derinliği (m)">
-  </div>
-  <div class="form-group">
-    <select id="desen">
-      <option value="repeating-linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%)">Şist</option>
-      <option value="repeating-linear-gradient(90deg, #d2b48c 25%, transparent 25%, transparent 75%, #d2b48c 75%)">Kumtaşı</option>
-      <option value="repeating-conic-gradient(#eee 25%, #888 0 50%, #eee 0 75%, #888 0)">Kalker</option>
-      <option value="repeating-linear-gradient(-45deg, #999 25%, transparent 25%, transparent 75%, #999 75%)">Kiltaşı</option>
-    </select>
-  </div>
-  <button onclick="katmanEkle()">Katman Ekle</button>
-  <button onclick="temizle()">Tümünü Temizle</button>
-
-  <div id="kesit">
-    <div class="labels" id="labelPanel"></div>
-    <div class="desenler" id="desenPanel"></div>
-  </div>
-
-  <script>
-    let katmanlar = [];
-
-    function katmanEkle() {
-      const ad = document.getElementById("katmanAdi").value;
-      const bas = parseFloat(document.getElementById("baslangic").value);
-      const bit = parseFloat(document.getElementById("bitis").value);
-      const desen = document.getElementById("desen").value;
-
-      if (!ad || isNaN(bas) || isNaN(bit) || bas >= bit) {
-        alert("Geçerli bilgiler giriniz.");
-        return;
-      }
-
-      katmanlar.push({ ad, bas, bit, desen });
-      katmanlar.sort((a, b) => a.bas - b.bas);
-      goster();
-    }
-
-    function goster() {
-      const labelPanel = document.getElementById("labelPanel");
-      const desenPanel = document.getElementById("desenPanel");
-      labelPanel.innerHTML = '';
-      desenPanel.innerHTML = '';
-      
-      const toplamYukseklik = 500; // piksel cinsinden sabit yükseklik
-      const toplamDerinlik = Math.max(...katmanlar.map(k => k.bit));
-      
-      katmanlar.forEach(k => {
-        const yukseklik = ((k.bit - k.bas) / toplamDerinlik) * toplamYukseklik;
+    <div class="container">
+        <h1>Jeolojik Kesit Oluşturucu</h1>
         
-        const labelDiv = document.createElement("div");
-        labelDiv.className = "katman-label";
-        labelDiv.style.height = `${yukseklik}px`;
-        labelDiv.innerHTML = `<b>${k.ad}</b><br>${(k.bit - k.bas).toFixed(1)} m`;
-        labelPanel.appendChild(labelDiv);
+        <div class="input-section">
+            <h2>Katman Bilgileri</h2>
+            <div class="layer-form">
+                <div class="form-group">
+                    <label for="layerName">Katman Adı</label>
+                    <input type="text" id="layerName" placeholder="Katman adı girin">
+                </div>
+                <div class="form-group">
+                    <label for="startDepth">Başlangıç Derinliği (m)</label>
+                    <input type="number" id="startDepth" placeholder="0" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="endDepth">Bitiş Derinliği (m)</label>
+                    <input type="number" id="endDepth" placeholder="1.0" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Kayaç Deseni</label>
+                    <div class="pattern-options" id="patternOptions">
+                        <!-- Desenler JavaScript ile eklenecek -->
+                    </div>
+                </div>
+                <button id="addLayerBtn">Katman Ekle</button>
+            </div>
+            
+            <div class="layer-list" id="layerList">
+                <h3>Eklenen Katmanlar</h3>
+                <!-- Katmanlar buraya eklenecek -->
+            </div>
+        </div>
         
-        const desenDiv = document.createElement("div");
-        desenDiv.className = "katman-desen";
-        desenDiv.style.backgroundImage = k.desen;
-        desenDiv.style.height = `${yukseklik}px`;
-        desenPanel.appendChild(desenDiv);
+        <div class="output-section">
+            <h2>Jeolojik Kesit</h2>
+            <button id="generateSectionBtn">Kesit Oluştur</button>
+            <div class="section-container" id="sectionContainer">
+                <div class="section-legend" id="sectionLegend"></div>
+                <div class="section-pattern" id="sectionPattern"></div>
+            </div>
+        </div>
+    </div>
 
-        const depthTop = document.createElement("div");
-        depthTop.className = "depth-label";
-        depthTop.style.top = `${(k.bas / toplamDerinlik) * toplamYukseklik}px`;
-        depthTop.innerText = `${k.bas} m`;
-        document.getElementById("kesit").appendChild(depthTop);
+    <script>
+        // Desen tanımları
+        const patterns = [
+            { name: "Kumtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"2\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/></svg>')" },
+            { name: "Kiltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a0522d\" opacity=\"0.3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Kireçtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5dc\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%238b4513\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Konglomera", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23cd853f\"/><circle cx=\"2\" cy=\"2\" r=\"1.5\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%238b4513\"/><circle cx=\"3\" cy=\"5\" r=\"0.8\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"6\" r=\"1.2\" fill=\"%238b4513\"/></svg>')" },
+            { name: "Kum", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f4a460\"/><circle cx=\"1\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"4\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"7\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"2\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"5\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"6\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/></svg>')" },
+            { name: "Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23deb887\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Marn", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23696969\" stroke-width=\"0.5\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Bazalt", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23222222\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23555\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23444\"/></svg>')" }
+        ];
 
-        if (k === katmanlar[katmanlar.length - 1]) {
-          const depthBot = document.createElement("div");
-          depthBot.className = "depth-label";
-          depthBot.style.top = `${(k.bit / toplamDerinlik) * toplamYukseklik}px`;
-          depthBot.innerText = `${k.bit} m`;
-          document.getElementById("kesit").appendChild(depthBot);
+        // Seçili desen
+        let selectedPatternIndex = 0;
+        const patternOptions = document.getElementById('patternOptions');
+        
+        // Desen seçeneklerini oluştur
+        patterns.forEach((pattern, index) => {
+            const patternDiv = document.createElement('div');
+            patternDiv.className = `pattern-option ${index === selectedPatternIndex ? 'selected' : ''}`;
+            patternDiv.title = pattern.name;
+            patternDiv.style.backgroundImage = pattern.pattern;
+            patternDiv.onclick = () => {
+                document.querySelectorAll('.pattern-option').forEach(opt => opt.classList.remove('selected'));
+                patternDiv.classList.add('selected');
+                selectedPatternIndex = index;
+            };
+            patternOptions.appendChild(patternDiv);
+        });
+
+        // Katman listesi
+        const layers = [];
+        
+        // Katman ekleme fonksiyonu
+        document.getElementById('addLayerBtn').onclick = function() {
+            const layerName = document.getElementById('layerName').value;
+            const startDepth = parseFloat(document.getElementById('startDepth').value);
+            const endDepth = parseFloat(document.getElementById('endDepth').value);
+            
+            if (!layerName || isNaN(startDepth) || isNaN(endDepth) || endDepth <= startDepth) {
+                alert("Lütfen geçerli katman bilgileri girin (Başlangıç derinliği bitişten küçük olmalı)");
+                return;
+            }
+            
+            const layer = {
+                name: layerName,
+                startDepth: startDepth,
+                endDepth: endDepth,
+                pattern: patterns[selectedPatternIndex]
+            };
+            
+            layers.push(layer);
+            updateLayerList();
+            
+            // Formu temizle
+            document.getElementById('layerName').value = '';
+            document.getElementById('startDepth').value = endDepth;
+            document.getElementById('endDepth').value = '';
+        };
+        
+        // Katman listesini güncelle
+        function updateLayerList() {
+            const layerList = document.getElementById('layerList');
+            layerList.innerHTML = '<h3>Eklenen Katmanlar</h3>';
+            
+            if (layers.length === 0) {
+                layerList.innerHTML += '<p>Henüz katman eklenmedi</p>';
+                return;
+            }
+            
+            layers.forEach((layer, index) => {
+                const layerItem = document.createElement('div');
+                layerItem.className = 'layer-item';
+                layerItem.innerHTML = `
+                    <div>
+                        <strong>${layer.name}</strong> - 
+                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m) - 
+                        ${layer.pattern.name}
+                    </div>
+                    <button class="delete-btn" data-index="${index}">Sil</button>
+                `;
+                layerList.appendChild(layerItem);
+            });
+            
+            // Silme butonlarına event ekle
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    layers.splice(index, 1);
+                    updateLayerList();
+                };
+            });
         }
-      });
-    }
-
-    function temizle() {
-      katmanlar = [];
-      goster();
-      document.querySelectorAll(".depth-label").forEach(e => e.remove());
-    }
-  </script>
-
+        
+        // Kesit oluşturma fonksiyonu
+        document.getElementById('generateSectionBtn').onclick = function() {
+            if (layers.length === 0) {
+                alert("Lütfen önce katman ekleyin");
+                return;
+            }
+            
+            // Katmanları derinliğe göre sırala
+            layers.sort((a, b) => a.startDepth - b.startDepth);
+            
+            const sectionLegend = document.getElementById('sectionLegend');
+            const sectionPattern = document.getElementById('sectionPattern');
+            
+            sectionLegend.innerHTML = '';
+            sectionPattern.innerHTML = '';
+            
+            // Kesit yüksekliğini belirle (en alttaki katmanın bitiş derinliği)
+            const sectionHeight = layers[layers.length - 1].endDepth;
+            sectionPattern.style.height = `${sectionHeight * 20}px`;
+            
+            // Katmanları çiz
+            layers.forEach((layer, index) => {
+                const layerHeight = (layer.endDepth - layer.startDepth) * 20;
+                const layerTop = layer.startDepth * 20;
+                
+                // Lejant kısmı
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.style.height = `${layerHeight}px`;
+                legendItem.innerHTML = `
+                    <div><strong>${layer.name}</strong></div>
+                    <div>${(layer.endDepth - layer.startDepth).toFixed(1)}m</div>
+                `;
+                sectionLegend.appendChild(legendItem);
+                
+                // Desen kısmı
+                const patternLayer = document.createElement('div');
+                patternLayer.className = 'pattern-layer';
+                patternLayer.style.height = `${layerHeight}px`;
+                patternLayer.style.top = `${layerTop}px`;
+                patternLayer.style.backgroundImage = layer.pattern.pattern;
+                patternLayer.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                sectionPattern.appendChild(patternLayer);
+                
+                // Derinlik işaretleri
+                const depthMark = document.createElement('div');
+                depthMark.className = 'depth-mark';
+                depthMark.style.top = `${layerTop}px`;
+                depthMark.innerHTML = `<span class="depth-label">${layer.startDepth}m</span>`;
+                sectionPattern.appendChild(depthMark);
+                
+                // Son katmanın bitiş derinliğini de ekle
+                if (index === layers.length - 1) {
+                    const endDepthMark = document.createElement('div');
+                    endDepthMark.className = 'depth-mark';
+                    endDepthMark.style.top = `${(layer.endDepth) * 20}px`;
+                    endDepthMark.innerHTML = `<span class="depth-label">${layer.endDepth}m</span>`;
+                    sectionPattern.appendChild(endDepthMark);
+                }
+            });
+        };
+    </script>
 </body>
 </html>
