@@ -76,21 +76,23 @@
             background-color: white;
             padding: 10px;
             border: 1px solid #ddd;
+            position: relative;
         }
         .section-legend {
             width: 150px;
             border-right: 1px solid #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            position: relative;
         }
         .legend-item {
+            position: absolute;
+            width: 100%;
             text-align: center;
-            padding: 10px;
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 0 5px;
             border-bottom: 1px dashed #ccc;
         }
         .section-pattern {
@@ -499,6 +501,7 @@
             // Kesit yüksekliğini belirle (en alttaki katmanın bitiş derinliği)
             const sectionHeight = layers[layers.length - 1].endDepth;
             sectionPattern.style.height = `${sectionHeight * 20}px`;
+            sectionLegend.style.height = `${sectionHeight * 20}px`;
             
             // Katmanları çiz
             layers.forEach((layer, index) => {
@@ -509,6 +512,7 @@
                 const legendItem = document.createElement('div');
                 legendItem.className = 'legend-item';
                 legendItem.style.height = `${layerHeight}px`;
+                legendItem.style.top = `${layerTop}px`;
                 legendItem.innerHTML = `
                     <div><strong>${layer.name}</strong></div>
                     <div>${(layer.endDepth - layer.startDepth).toFixed(1)}m</div>
