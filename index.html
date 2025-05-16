@@ -1,206 +1,151 @@
-<!DOCTYPE html>
-<html lang="tr">
+<!DOCTYPE html><html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Litolojik Kesit Oluşturucu</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
-    label, input, select, button {
-      margin: 5px 0;
-      display: block;
-    }
-    #container {
-      display: flex;
-      gap: 20px;
-      margin-top: 20px;
-      align-items: flex-start;
-    }
-    #kesit {
-      border: 3px solid #000;
-      width: 200px;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #kesitContainer { display: flex; border: 2px solid #333; margin-top: 20px; }
+    #kesitCanvas { display: flex; flex-direction: column; width: 150px; border-right: 2px solid #000; }
     .katman {
-      width: 100%;
-      position: relative;
-      border: 3px solid;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      border: 2px solid #000;
+      margin: 2px 0;
+      box-sizing: border-box;
     }
     .katman img {
-      width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
-    #bilgi {
-      flex: 1;
-      border-left: 2px dashed #888;
-      padding-left: 10px;
-    }
-    .bilgi-item {
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .katman span {
+      writing-mode: vertical-rl;
       text-align: center;
-      border-bottom: 1px solid #ccc;
-      box-sizing: border-box;
-      padding: 5px;
-      cursor: move;
+      padding: 0 4px;
     }
-    .sil-btn {
-      background: red;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      cursor: pointer;
-      font-size: 12px;
-    }
+    #form input, select { margin: 5px; }
+    #katmanBilgileri { margin-left: 20px; }
+    .veriSatiri { margin-bottom: 10px; }
   </style>
 </head>
 <body>
-
-<h2>Litolojik Kesit Oluşturucu</h2>
-
-<div>
-  <label>Birim:
-    <select id="birim">
-      <option>Bitkisel Toprak</option>
-      <option>Alüvyon</option>
-      <option>Kil</option>
-      <option>Silt</option>
-      <option>Kum</option>
-      <option>Çakıl</option>
-      <option>Kireçtaşı</option>
-      <option>Şist</option>
-      <option>Volkanit</option>
-      <option>Metakırıntılı Kayaç</option>
-      <option>Granit</option>
-    </select>
-  </label>
-  <label>Başlangıç (m): <input type="number" id="bas" step="0.1"></label>
-  <label>Bitiş (m): <input type="number" id="bit" step="0.1"></label>
-  <button onclick="ekle()">Katman Ekle</button>
-  <button onclick="pdfAl()">PDF Kaydet</button>
+<h1>Litolojik Kesit Oluşturucu</h1>
+<div id="form">
+  <select id="litoloji">
+    <option value="bitkisel">Bitkisel Toprak</option>
+    <option value="aluvyon">Alüvyon</option>
+    <option value="kil">Kil</option>
+    <option value="silt">Silt</option>
+    <option value="kum">Kum</option>
+    <option value="cakil">Çakıl</option>
+    <option value="kirec">Kireçtaşı</option>
+    <option value="sist">Şist</option>
+    <option value="volkanit">Volkanit</option>
+    <option value="metakirintili">Metakırıntılı</option>
+    <option value="granit">Granit</option>
+  </select>
+  <input type="number" id="baslangic" placeholder="Başlangıç (m)">
+  <input type="number" id="bitis" placeholder="Bitiş (m)">
+  <button onclick="katmanEkle()">Katman Ekle</button>
+  <button onclick="pdfKaydet()">PDF Olarak Kaydet</button>
 </div>
-
-<div id="container">
-  <div id="kesit"></div>
-  <div id="bilgi"></div>
-</div>
-
-<script>
-const gorseller = {
-  "Bitkisel Toprak": "https://i.imgur.com/YLQSK4K.jpg",
-  "Alüvyon": "https://i.imgur.com/XgTFj7K.jpg",
-  "Kil": "https://i.imgur.com/ZgWqivA.jpg",
-  "Silt": "https://i.imgur.com/Bc0FCtr.jpg",
-  "Kum": "https://i.imgur.com/DLU0f1L.jpg",
-  "Çakıl": "https://i.imgur.com/3tLxBlj.jpg",
-  "Kireçtaşı": "https://i.imgur.com/jhHAvqh.jpg",
-  "Şist": "https://i.imgur.com/Es49hcn.jpg",
-  "Volkanit": "https://i.imgur.com/S04Wo6h.jpg",
-  "Metakırıntılı Kayaç": "https://i.imgur.com/wmwknTX.jpg",
-  "Granit": "https://i.imgur.com/jLCpzYo.jpg"
-};
-
-const renkler = [
-  "#FF5733", "#33C1FF", "#33FF57", "#FFC300",
-  "#A633FF", "#FF33A1", "#33FFF6", "#B6FF33",
-  "#FF8F33", "#8D33FF", "#33FF88"
-];
-
+<div id="kesitContainer">
+  <div id="kesitCanvas"></div>
+  <div id="katmanBilgileri"></div>
+</div><script>
 let katmanlar = [];
 
-function ekle() {
-  const birim = document.getElementById('birim').value;
-  const basInput = document.getElementById('bas');
-  const bitInput = document.getElementById('bit');
-  const bas = parseFloat(basInput.value);
-  const bit = parseFloat(bitInput.value);
+const litolojiGorsel = {
+  bitkisel: 'https://i.ibb.co/mzX3BqN/bitkisel.jpg',
+  aluvyon: 'https://i.ibb.co/5cLT1Rn/aluvyon.jpg',
+  kil: 'https://i.ibb.co/TMc9H5k/kil.jpg',
+  silt: 'https://i.ibb.co/QYVZJq3/silt.jpg',
+  kum: 'https://i.ibb.co/Y02XT7T/kum.jpg',
+  cakil: 'https://i.ibb.co/Wx49DQ8/cakil.jpg',
+  kirec: 'https://i.ibb.co/JzKjq7C/kirec.jpg',
+  sist: 'https://i.ibb.co/SRSdxK5/sist.jpg',
+  volkanit: 'https://i.ibb.co/GV0t31j/volkanit.jpg',
+  metakirintili: 'https://i.ibb.co/qCZGFhh/metakirintili.jpg',
+  granit: 'https://i.ibb.co/b6qrbNp/granit.jpg'
+};
+
+function katmanEkle() {
+  const litoloji = document.getElementById('litoloji').value;
+  let bas = parseFloat(document.getElementById('baslangic').value);
+  let bit = parseFloat(document.getElementById('bitis').value);
 
   if (isNaN(bas) || isNaN(bit) || bit <= bas) {
-    alert("Geçersiz değerler");
+    alert("Geçerli başlangıç ve bitiş değeri giriniz.");
     return;
   }
 
-  katmanlar.push({ birim, bas, bit });
+  katmanlar.push({ litoloji, bas, bit });
   katmanlar.sort((a, b) => a.bas - b.bas);
   guncelle();
 
-  basInput.value = bit;
-  bitInput.value = "";
+  // Otomatik yeni başlangıç ayarla
+  document.getElementById('baslangic').value = bit;
+  document.getElementById('bitis').value = bit + 1;
 }
 
-function sil(index) {
+function katmanSil(index) {
   katmanlar.splice(index, 1);
+
+  // Bitişten sonra gelenlerin başlangıcını önceki bitişe göre yeniden ayarla
+  for (let i = 1; i < katmanlar.length; i++) {
+    const onceki = katmanlar[i - 1];
+    const suanki = katmanlar[i];
+    let yukseklik = suanki.bit - suanki.bas;
+    suanki.bas = onceki.bit;
+    suanki.bit = suanki.bas + yukseklik;
+  }
   guncelle();
 }
 
 function guncelle() {
-  const kesit = document.getElementById('kesit');
-  const bilgi = document.getElementById('bilgi');
-  kesit.innerHTML = '';
+  const canvas = document.getElementById('kesitCanvas');
+  const bilgi = document.getElementById('katmanBilgileri');
+  canvas.innerHTML = '';
   bilgi.innerHTML = '';
-
-  const toplamDerinlik = Math.max(...katmanlar.map(k => k.bit), 1);
-
-  katmanlar.forEach((k, i) => {
-    const yuk = ((k.bit - k.bas) / toplamDerinlik) * 600;
-
+  katmanlar.forEach((katman, i) => {
     const div = document.createElement('div');
     div.className = 'katman';
-    div.style.height = yuk + 'px';
-    div.style.borderColor = renkler[i % renkler.length];
+    const yukseklik = (katman.bit - katman.bas) * 50;
+    div.style.height = yukseklik + 'px';
 
     const img = document.createElement('img');
-    img.src = gorseller[k.birim] || '';
+    img.src = litolojiGorsel[katman.litoloji];
+    img.style.width = '100%';
+
     div.appendChild(img);
-    kesit.appendChild(div);
+    canvas.appendChild(div);
 
-    const bilgiDiv = document.createElement('div');
-    bilgiDiv.className = 'bilgi-item';
-    bilgiDiv.setAttribute('draggable', 'true');
-    bilgiDiv.style.height = yuk + 'px';
-    bilgiDiv.dataset.index = i;
-    bilgiDiv.innerHTML = `<div><b>${k.birim}</b><br>${k.bas} - ${k.bit} m</div><button class="sil-btn" onclick="sil(${i})">Sil</button>`;
-    bilgi.appendChild(bilgiDiv);
-  });
-
-  // Sürükle-bırak sıralama
-  bilgi.querySelectorAll('.bilgi-item').forEach(item => {
-    item.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', e.target.dataset.index);
-    });
-
-    item.addEventListener('dragover', e => e.preventDefault());
-
-    item.addEventListener('drop', e => {
-      e.preventDefault();
-      const from = +e.dataTransfer.getData('text/plain');
-      const to = +e.target.closest('.bilgi-item').dataset.index;
-      const moved = katmanlar.splice(from, 1)[0];
-      katmanlar.splice(to, 0, moved);
-      guncelle();
-    });
+    const vDiv = document.createElement('div');
+    vDiv.className = 'veriSatiri';
+    vDiv.innerHTML = `
+      <strong>${katman.bas.toFixed(1)}–${katman.bit.toFixed(1)} m</strong><br>
+      ${katman.litoloji}<br>
+      <button onclick="katmanSil(${i})">Sil</button>
+    `;
+    bilgi.appendChild(vDiv);
   });
 }
 
-function pdfAl() {
-  const element = document.getElementById("container");
-  const opt = {
-    margin: 0.5,
-    filename: 'litolojik_kesit.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-  };
-  html2pdf().set(opt).from(element).save();
+function pdfKaydet() {
+  html2canvas(document.getElementById("kesitContainer")).then(canvas => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const ratio = Math.min(pageWidth / canvas.width, pageHeight / canvas.height);
+    const imgWidth = canvas.width * ratio;
+    const imgHeight = canvas.height * ratio;
+    pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+    pdf.save("litolojik_kesit.pdf");
+  });
 }
-</script>
-
-</body>
+</script></body>
 </html>
