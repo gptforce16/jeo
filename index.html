@@ -1,76 +1,152 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Litolojik Kesit Oluşturucu</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    h2 {
-      text-align: center;
-    }
-    .form, .buttons {
-      max-width: 400px;
-      margin: 10px auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    input, select, button {
-      padding: 10px;
-      font-size: 16px;
-    }
-    #kesit {
-      margin-top: 30px;
-      width: 100%;
-      max-width: 400px;
-      margin-inline: auto;
-      border: 1px solid #ccc;
-      background: white;
-    }
-    .katman {
-      position: relative;
-      width: 100%;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      border: 3px solid #333;
-      box-sizing: border-box;
-    }
-    .katman span {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.7);
-      padding: 2px 5px;
-      font-size: 14px;
-      bottom: 5px;
-      left: 5px;
-      border-radius: 4px;
-    }
-    .tools {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      display: flex;
-      gap: 5px;
-    }
-    .tools button {
-      padding: 2px 5px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dinamik Litolojik Kesit</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    background: #f4f4f4;
+  }
+  h1 {
+    text-align: center;
+  }
+  #form {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  select, input[type=number] {
+    width: 100%;
+    padding: 6px;
+    font-size: 1rem;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    margin-top: 15px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    background-color: #0077cc;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #005fa3;
+  }
+
+  #kesit {
+    max-width: 480px;
+    margin: 20px auto;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    padding: 10px 5px 5px 5px;
+    box-sizing: border-box;
+  }
+
+  .katman {
+    position: relative;
+    width: 100%;
+    border: 3px solid #333;
+    box-sizing: border-box;
+    padding-left: 50px; /* ikon için boşluk */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.15);
+    margin-bottom: 4px;
+    border-radius: 8px;
+  }
+  .katman img.icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #666;
+    background: white;
+    object-fit: cover;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  }
+  .katman span {
+    position: absolute;
+    bottom: 5px;
+    left: 55px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 3px 7px;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+  .katman .tools {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+  .katman .tools button {
+    background: #444;
+    color: white;
+    border: none;
+    margin-left: 3px;
+    padding: 2px 7px;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .katman .tools button:hover {
+    background: #222;
+  }
+
+  /* Düzenleme formu */
+  #duzenleForm {
+    max-width: 480px;
+    margin: 15px auto;
+    background: #fff8dc;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+    display: none;
+  }
+  #duzenleForm label {
+    margin-top: 8px;
+  }
+  #duzenleForm button {
+    background-color: #ff8c00;
+    margin-top: 12px;
+  }
+  #duzenleForm button:hover {
+    background-color: #e67600;
+  }
+</style>
 </head>
 <body>
 
-<h2>Litolojik Kesit Oluşturucu</h2>
+<h1>Dinamik Litolojik Kesit</h1>
 
-<div class="form">
-  <select id="birim">
+<div id="form">
+  <label for="birim">Litolojik Birim Seçin:</label>
+  <select id="birim" required>
     <option value="bitkisel">Bitkisel Toprak</option>
     <option value="aluvyon">Alüvyon</option>
     <option value="kil">Kil</option>
@@ -85,46 +161,88 @@
     <option value="metakirintili">Metakırıntılı Kayaç</option>
     <option value="granit">Granit</option>
   </select>
-  <input type="number" id="bas" placeholder="Başlangıç derinliği (m)" />
-  <input type="number" id="bit" placeholder="Bitiş derinliği (m)" />
-  <button onclick="ekle()">Ekle</button>
-</div>
 
-<div class="buttons">
-  <button onclick="exportPDF()">PDF Olarak Kaydet</button>
+  <label for="bas">Başlangıç Derinliği (m):</label>
+  <input type="number" id="bas" min="0" step="0.1" required />
+
+  <label for="bit">Bitiş Derinliği (m):</label>
+  <input type="number" id="bit" min="0" step="0.1" required />
+
+  <button onclick="ekle()">Katman Ekle</button>
 </div>
 
 <div id="kesit"></div>
 
+<div id="duzenleForm">
+  <h3>Katman Düzenle</h3>
+  <label for="d_birim">Litolojik Birim:</label>
+  <select id="d_birim" required>
+    <option value="bitkisel">Bitkisel Toprak</option>
+    <option value="aluvyon">Alüvyon</option>
+    <option value="kil">Kil</option>
+    <option value="silt">Silt</option>
+    <option value="kum">Kum</option>
+    <option value="cakil">Çakıl</option>
+    <option value="kil_kum">Kil + Kum</option>
+    <option value="kum_cakil">Kum + Çakıl</option>
+    <option value="kirectasi">Kireçtaşı</option>
+    <option value="sist">Şist</option>
+    <option value="volkanit">Volkanit</option>
+    <option value="metakirintili">Metakırıntılı Kayaç</option>
+    <option value="granit">Granit</option>
+  </select>
+
+  <label for="d_bas">Başlangıç Derinliği (m):</label>
+  <input type="number" id="d_bas" min="0" step="0.1" required />
+
+  <label for="d_bit">Bitiş Derinliği (m):</label>
+  <input type="number" id="d_bit" min="0" step="0.1" required />
+
+  <button onclick="kaydetDuzenle()">Kaydet</button>
+  <button onclick="iptalDuzenle()" style="background:#888; margin-left:10px;">İptal</button>
+</div>
+
+<div style="max-width:480px; margin:20px auto; text-align:center;">
+  <button onclick="pdfAl()" style="background:#28a745;">PDF Olarak Kaydet</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
   const birimGorselleri = {
-    bitkisel: ["Bitkisel Toprak", "https://upload.wikimedia.org/wikipedia/commons/8/83/Humus_toprak.jpg"],
-    aluvyon: ["Alüvyon", "https://upload.wikimedia.org/wikipedia/commons/4/48/Aluvium.jpg"],
-    kil: ["Kil", "https://upload.wikimedia.org/wikipedia/commons/5/55/Clay_texture.jpg"],
-    silt: ["Silt", "https://upload.wikimedia.org/wikipedia/commons/2/21/Silt_soil.jpg"],
-    kum: ["Kum", "https://upload.wikimedia.org/wikipedia/commons/e/ef/Sand_texture.jpg"],
-    cakil: ["Çakıl", "https://upload.wikimedia.org/wikipedia/commons/2/23/Gravel_texture.jpg"],
-    kil_kum: ["Kil + Kum", "https://upload.wikimedia.org/wikipedia/commons/a/ab/Silty_clay_texture.jpg"],
-    kum_cakil: ["Kum + Çakıl", "https://upload.wikimedia.org/wikipedia/commons/0/01/Sand_and_gravel.jpg"],
-    kirectasi: ["Kireçtaşı", "https://upload.wikimedia.org/wikipedia/commons/2/2d/Limestone_texture.jpg"],
-    sist: ["Şist", "https://upload.wikimedia.org/wikipedia/commons/f/fe/Schist_texture.jpg"],
-    volkanit: ["Volkanit", "https://upload.wikimedia.org/wikipedia/commons/6/65/Basalt_volcanic_rock.jpg"],
-    metakirintili: ["Metakırıntılı Kayaç", "https://upload.wikimedia.org/wikipedia/commons/e/e2/Greywacke_texture.jpg"],
-    granit: ["Granit", "https://upload.wikimedia.org/wikipedia/commons/e/e0/Granite_texture.jpg"]
+    bitkisel: ["Bitkisel Toprak", "https://upload.wikimedia.org/wikipedia/commons/8/83/Humus_toprak.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Humus_toprak.jpg/40px-Humus_toprak.jpg"],
+    aluvyon: ["Alüvyon", "https://upload.wikimedia.org/wikipedia/commons/4/48/Aluvium.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Aluvium.jpg/40px-Aluvium.jpg"],
+    kil: ["Kil", "https://upload.wikimedia.org/wikipedia/commons/5/55/Clay_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Clay_texture.jpg/40px-Clay_texture.jpg"],
+    silt: ["Silt", "https://upload.wikimedia.org/wikipedia/commons/2/21/Silt_soil.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Silt_soil.jpg/40px-Silt_soil.jpg"],
+    kum: ["Kum", "https://upload.wikimedia.org/wikipedia/commons/e/ef/Sand_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Sand_texture.jpg/40px-Sand_texture.jpg"],
+    cakil: ["Çakıl", "https://upload.wikimedia.org/wikipedia/commons/2/23/Gravel_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Gravel_texture.jpg/40px-Gravel_texture.jpg"],
+    kil_kum: ["Kil + Kum", "https://upload.wikimedia.org/wikipedia/commons/a/ab/Silty_clay_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Silty_clay_texture.jpg/40px-Silty_clay_texture.jpg"],
+    kum_cakil: ["Kum + Çakıl", "https://upload.wikimedia.org/wikipedia/commons/0/01/Sand_and_gravel.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Sand_and_gravel.jpg/40px-Sand_and_gravel.jpg"],
+    kirectasi: ["Kireçtaşı", "https://upload.wikimedia.org/wikipedia/commons/2/2d/Limestone_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Limestone_texture.jpg/40px-Limestone_texture.jpg"],
+    sist: ["Şist", "https://upload.wikimedia.org/wikipedia/commons/f/fe/Schist_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Schist_texture.jpg/40px-Schist_texture.jpg"],
+    volkanit: ["Volkanit", "https://upload.wikimedia.org/wikipedia/commons/6/65/Basalt_volcanic_rock.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Basalt_volcanic_rock.jpg/40px-Basalt_volcanic_rock.jpg"],
+    metakirintili: ["Metakırıntılı Kayaç", "https://upload.wikimedia.org/wikipedia/commons/e/e2/Greywacke_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Greywacke_texture.jpg/40px-Greywacke_texture.jpg"],
+    granit: ["Granit", "https://upload.wikimedia.org/wikipedia/commons/e/e0/Granite_texture.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Granite_texture.jpg/40px-Granite_texture.jpg"]
   };
 
-  function ekle(birimVal = null, basVal = null, bitVal = null, düzenleDiv = null) {
-    const birim = birimVal || document.getElementById("birim").value;
-    const bas = parseFloat(basVal || document.getElementById("bas").value);
-    const bit = parseFloat(bitVal || document.getElementById("bit").value);
+  let duzenlenenKatman = null;
 
-    if (isNaN(bas) || isNaN(bit) || bit <= bas) {
-      alert("Geçerli derinlik girin.");
+  function ekle() {
+    const birim = document.getElementById("birim").value;
+    const bas = parseFloat(document.getElementById("bas").value);
+    const bit = parseFloat(document.getElementById("bit").value);
+
+    if (isNaN(bas) || isNaN(bit)) {
+      alert("Lütfen geçerli sayısal derinlik değerleri girin.");
+      return;
+    }
+    if (bit <= bas) {
+      alert("Bitiş derinliği başlangıç derinliğinden büyük olmalıdır.");
       return;
     }
 
+    // Her metre 10px yükseklik
     const yukseklikPx = (bit - bas) * 10;
-    const [ad, url] = birimGorselleri[birim];
+    const [ad, url, iconUrl] = birimGorselleri[birim];
 
     const katman = document.createElement("div");
     katman.className = "katman";
@@ -134,72 +252,19 @@
     katman.dataset.bas = bas;
     katman.dataset.bit = bit;
 
+    const iconImg = document.createElement("img");
+    iconImg.src = iconUrl;
+    iconImg.className = "icon";
+    iconImg.alt = ad + " ikonu";
+    katman.appendChild(iconImg);
+
     const yazi = document.createElement("span");
     yazi.textContent = `${ad} (${bas}m - ${bit}m)`;
     katman.appendChild(yazi);
 
     const tools = document.createElement("div");
     tools.className = "tools";
-
     tools.innerHTML = `
       <button onclick="duzenle(this)">Düzenle</button>
       <button onclick="yukari(this)">↑</button>
-      <button onclick="asagi(this)">↓</button>
-      <button onclick="sil(this)">Sil</button>
-    `;
-    katman.appendChild(tools);
-
-    if (düzenleDiv) {
-      düzenleDiv.replaceWith(katman);
-    } else {
-      document.getElementById("kesit").appendChild(katman);
-    }
-
-    document.getElementById("bas").value = "";
-    document.getElementById("bit").value = "";
-  }
-
-  function sil(btn) {
-    btn.closest(".katman").remove();
-  }
-
-  function yukari(btn) {
-    const div = btn.closest(".katman");
-    const prev = div.previousElementSibling;
-    if (prev) div.parentNode.insertBefore(div, prev);
-  }
-
-  function asagi(btn) {
-    const div = btn.closest(".katman");
-    const next = div.nextElementSibling;
-    if (next) div.parentNode.insertBefore(next, div);
-  }
-
-  function duzenle(btn) {
-    const div = btn.closest(".katman");
-    const birim = div.dataset.birim;
-    const bas = div.dataset.bas;
-    const bit = div.dataset.bit;
-
-    document.getElementById("birim").value = birim;
-    document.getElementById("bas").value = bas;
-    document.getElementById("bit").value = bit;
-
-    ekle(birim, bas, bit, div);
-  }
-
-  function exportPDF() {
-    const element = document.getElementById("kesit");
-    const opt = {
-      margin:       0,
-      filename:     'litolojik-kesit.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
-  }
-</script>
-
-</body>
-</html>
+      <button onclick="asagi(this)">↓</button
