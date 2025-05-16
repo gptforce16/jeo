@@ -172,6 +172,21 @@
       padding: 2px 5px;
       font-size: 12px;
       color: var(--dark);
+      pointer-events: none;
+    }
+    
+    .mobile-layer-info {
+      display: none;
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      padding: 5px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 4px;
+      font-size: 12px;
+      text-align: center;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
     .bilgi-item {
@@ -224,16 +239,26 @@
       
       #info-container {
         height: auto;
-        min-height: 300px;
+        min-height: 200px;
+        border-left: none;
+        border-top: 2px solid #ccc;
+        padding-left: 0;
+        padding-top: 10px;
+        margin-top: 10px;
       }
-      
+
+      .depth-info {
+        display: none;
+      }
+
+      .mobile-layer-info {
+        display: block;
+      }
+
       .bilgi-item {
         position: relative;
         margin-bottom: 10px;
-      }
-      
-      .button-group {
-        flex-direction: column;
+        margin-top: 30px;
       }
     }
   </style>
@@ -448,29 +473,40 @@ function guncelle() {
     katmanPattern.style.backgroundColor = k.renk;
     katmanPattern.style.backgroundImage = getPatternStyle(k.desen, k.renk);
     
+    // Mobilde katman bilgisi
+    const mobileInfo = document.createElement('div');
+    mobileInfo.className = 'mobile-layer-info';
+    mobileInfo.style.top = `${yukseklik/2}%`;
+    mobileInfo.textContent = `${k.ad} (${k.bas.toFixed(1)}-${k.bit.toFixed(1)}m)`;
+    katmanContent.appendChild(mobileInfo);
+    
     katmanContent.appendChild(katmanPattern);
     katmanDiv.appendChild(katmanContent);
     kesit.appendChild(katmanDiv);
     
-    // Derinlik bilgileri (cetvel gibi)
-    const basBilgi = document.createElement('div');
-    basBilgi.className = 'depth-info';
-    basBilgi.style.top = `${basYuzde}%`;
-    basBilgi.innerHTML = `<span>${k.ad}</span><span>${k.bas.toFixed(1)}m</span>`;
-    infoContainer.appendChild(basBilgi);
-    
-    const bitBilgi = document.createElement('div');
-    bitBilgi.className = 'depth-info';
-    bitBilgi.style.top = `${bitYuzde}%`;
-    bitBilgi.innerHTML = `<span>${k.ad}</span><span>${k.bit.toFixed(1)}m</span>`;
-    infoContainer.appendChild(bitBilgi);
+    // Masaüstü cetvel bilgisi
+    if (window.innerWidth > 768) {
+      const basBilgi = document.createElement('div');
+      basBilgi.className = 'depth-info';
+      basBilgi.style.top = `${basYuzde}%`;
+      basBilgi.innerHTML = `<span>${k.ad}</span><span>${k.bas.toFixed(1)}m</span>`;
+      infoContainer.appendChild(basBilgi);
+      
+      const bitBilgi = document.createElement('div');
+      bitBilgi.className = 'depth-info';
+      bitBilgi.style.top = `${bitYuzde}%`;
+      bitBilgi.innerHTML = `<span>${k.ad}</span><span>${k.bit.toFixed(1)}m</span>`;
+      infoContainer.appendChild(bitBilgi);
+    }
     
     // Katman bilgisi (orta nokta)
     const bilgiDiv = document.createElement('div');
     bilgiDiv.className = 'bilgi-item';
     bilgiDiv.setAttribute('draggable', 'true');
     bilgiDiv.dataset.index = i;
-    bilgiDiv.style.top = `${ortaNokta - 2}%`;
+    if (window.innerWidth > 768) {
+      bilgiDiv.style.top = `${ortaNokta - 2}%`;
+    }
     bilgiDiv.innerHTML = `
       <div class="bilgi-text">
         <strong>${k.ad}</strong> (${(k.bit - k.bas).toFixed(1)}m)
