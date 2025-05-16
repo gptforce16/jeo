@@ -227,12 +227,22 @@
       border: 1px solid #999;
     }
     
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
     @media (max-width: 768px) {
       .form-grid {
         grid-template-columns: 1fr;
       }
       
       #container {
+        flex-direction: column;
+      }
+      
+      .button-group {
         flex-direction: column;
       }
     }
@@ -309,9 +319,10 @@
     </div>
     
     <div class="button-group">
-      <button onclick="ekle()"><i class="fas fa-plus"></i> Katman Ekle</button>
-      <button onclick="duzenle()" class="secondary" id="editBtn" disabled><i class="fas fa-edit"></i> Düzenle</button>
-      <button onclick="temizle()" class="danger"><i class="fas fa-trash"></i> Temizle</button>
+      <button id="addBtn" onclick="ekle()"><i class="fas fa-plus"></i> Katman Ekle</button>
+      <button id="editBtn" onclick="duzenle()" class="secondary" disabled><i class="fas fa-edit"></i> Düzenle</button>
+      <button id="clearBtn" onclick="temizle()" class="danger"><i class="fas fa-trash"></i> Temizle</button>
+      <button id="pdfBtn" onclick="pdfAl()"><i class="fas fa-file-pdf"></i> PDF Oluştur</button>
     </div>
   </div>
 </div>
@@ -327,7 +338,10 @@
   <div id="info-panel">
     <div class="info-header">
       <h3><i class="fas fa-info-circle"></i> Katman Bilgileri</h3>
-      <button onclick="pdfAl()"><i class="fas fa-file-pdf"></i> PDF Oluştur</button>
+      <div class="button-group">
+        <button onclick="katmanlariKaydet()"><i class="fas fa-save"></i> Kaydet</button>
+        <button onclick="katmanlariYukle()" class="secondary"><i class="fas fa-folder-open"></i> Yükle</button>
+      </div>
     </div>
     <div id="bilgi"></div>
   </div>
@@ -383,6 +397,12 @@ const desenStilleri = {
 let katmanlar = [];
 let aktifKatmanIndex = null;
 
+// Buton event listener'ları
+document.getElementById('addBtn').addEventListener('click', ekle);
+document.getElementById('editBtn').addEventListener('click', duzenle);
+document.getElementById('clearBtn').addEventListener('click', temizle);
+document.getElementById('pdfBtn').addEventListener('click', pdfAl);
+
 function ekle() {
   const birim = document.getElementById('birim').value;
   const basInput = document.getElementById('bas');
@@ -398,7 +418,7 @@ function ekle() {
     basInput.value = bas;
   }
   
-  if (isNaN(bit) {
+  if (isNaN(bit)) {
     bit = bas + 1.0;
     bitInput.value = bit;
   }
@@ -673,7 +693,47 @@ function pdfAl() {
   });
 }
 
-// Sayfa yüklendiğinde örnek veri ekle (isteğe bağlı)
+function katmanlariKaydet() {
+  const data = JSON.stringify(katmanlar);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'litolojik_kesit.json';
+  a.click();
+  
+  URL.revokeObjectURL(url);
+}
+
+function katmanlariYukle() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = event => {
+      try {
+        const data = JSON.parse(event.target.result);
+        katmanlar = data;
+        aktifKatmanIndex = null;
+        guncelle();
+        document.getElementById('editBtn').disabled = true;
+      } catch (error) {
+        alert("Geçersiz dosya formatı!");
+      }
+    };
+    
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
+
+// Sayfa yüklendiğinde örnek veri ekle
 window.onload = function() {
   // Örnek katmanlar
   katmanlar = [
