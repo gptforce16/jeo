@@ -3,267 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeolojik Kesit Oluşturucu | Profesyonel</title>
+    <title>Jeolojik Kesit Oluşturucu</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --gray: #95a5a6;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --border-radius: 8px;
-            --box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f5f7fa;
-            color: var(--dark);
+            font-family: Arial, sans-serif;
+            margin: 20px;
             line-height: 1.6;
-            padding: 20px;
         }
-
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 30px;
-        }
-
-        h1, h2, h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        h1 i {
-            color: var(--secondary);
-        }
-
-        h2 {
-            font-size: 1.8rem;
-        }
-
-        .input-section, .output-section {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 25px;
-            transition: var(--transition);
-        }
-
-        .input-section:hover, .output-section:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .layer-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
+        }
+        .input-section, .output-section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .layer-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
             align-items: flex-end;
-            margin-bottom: 25px;
         }
-
         .form-group {
-            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
         }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark);
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px 12px;
+        input, select {
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            font-size: 14px;
+            border-radius: 4px;
         }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-        }
-
         button {
-            padding: 10px 20px;
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
         }
-
-        button i {
-            font-size: 16px;
+        button:hover {
+            background-color: #45a049;
         }
-
-        .btn-primary {
-            background-color: var(--secondary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #219955;
-            transform: translateY(-2px);
-        }
-
-        .btn-warning {
-            background-color: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background-color: #e67e22;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-            transform: translateY(-2px);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--gray);
-            color: var(--dark);
-        }
-
-        .btn-outline:hover {
-            background-color: #f8f9fa;
-        }
-
         .layer-list {
             margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
         }
-
-        .layer-list h3 {
-            font-size: 1.2rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .layer-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 8px;
-            background-color: #f8f9fa;
-            transition: var(--transition);
+            padding: 10px;
+            border: 1px solid #eee;
+            margin-bottom: 5px;
+            background-color: #f9f9f9;
         }
-
-        .layer-item:hover {
-            background-color: #e9ecef;
-        }
-
         .layer-info {
             flex-grow: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
         }
-
-        .layer-name {
-            font-weight: 500;
-            min-width: 150px;
-        }
-
-        .layer-depth {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .layer-pattern {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .pattern-preview {
-            width: 20px;
-            height: 20px;
-            border-radius: 3px;
-        }
-
         .layer-actions {
             display: flex;
-            gap: 8px;
+            gap: 5px;
         }
-
-        .section-wrapper {
-            margin-top: 20px;
-        }
-
         .section-container {
             display: flex;
+            margin-top: 20px;
             background-color: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-        }
-
-        .section-legend {
-            width: 180px;
-            background-color: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
             position: relative;
         }
-
+        .section-legend {
+            width: 150px;
+            border-right: 1px solid #000;
+            position: relative;
+        }
         .legend-item {
             position: absolute;
             width: 100%;
@@ -273,195 +92,124 @@
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
-            padding: 0 10px;
-            border-bottom: 1px dashed #ddd;
+            padding: 0 5px;
+            border-bottom: 1px dashed #ccc;
         }
-
-        .legend-item strong {
-            margin-bottom: 5px;
-        }
-
         .section-pattern {
             flex-grow: 1;
             position: relative;
         }
-
         .pattern-layer {
             width: 100%;
             position: absolute;
             left: 0;
         }
-
         .depth-mark {
             position: absolute;
             left: 0;
             width: 100%;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #000;
             text-align: center;
             font-size: 12px;
         }
-
         .depth-label {
             background-color: white;
-            padding: 0 10px;
+            padding: 0 5px;
             position: relative;
             top: -10px;
-            color: var(--gray);
         }
-
-        .save-section {
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
+        .delete-btn {
+            background-color: #f44336;
         }
-
+        .edit-btn {
+            background-color: #2196F3;
+        }
+        .save-btn {
+            background-color: #ff9800;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        .edit-btn:hover {
+            background-color: #0b7dda;
+        }
+        .save-btn:hover {
+            background-color: #e68a00;
+        }
         .pattern-options {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 5px;
             margin-top: 10px;
             max-height: 200px;
             overflow-y: auto;
             padding: 5px;
         }
-
         .pattern-option {
             width: 50px;
             height: 50px;
-            border: 2px solid transparent;
-            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
             cursor: pointer;
-            transition: var(--transition);
-            position: relative;
         }
-
-        .pattern-option:hover {
-            transform: scale(1.05);
-        }
-
         .pattern-option.selected {
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            border: 2px solid #4CAF50;
         }
-
-        .pattern-option .pattern-name {
-            position: absolute;
-            bottom: -25px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 10px;
-            color: var(--gray);
-        }
-
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
             overflow: auto;
+            background-color: rgba(0,0,0,0.4);
         }
-
         .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            width: 90%;
-            max-width: 800px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            position: relative;
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
         }
-
         .close {
-            position: absolute;
-            right: 25px;
-            top: 25px;
+            color: #aaa;
+            float: right;
             font-size: 28px;
             font-weight: bold;
-            color: var(--gray);
             cursor: pointer;
-            transition: var(--transition);
         }
-
         .close:hover {
-            color: var(--dark);
+            color: black;
         }
-
-        .modal-title {
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            color: var(--primary);
+        .section-wrapper {
+            position: relative;
         }
-
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-        }
-
-        .empty-state i {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: #ddd;
-        }
-
-        @media (max-width: 768px) {
-            .layer-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .layer-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            
-            .section-container {
-                flex-direction: column;
-            }
-            
-            .section-legend {
-                width: 100%;
-                height: auto;
-                display: flex;
-                flex-wrap: wrap;
-            }
-            
-            .legend-item {
-                position: relative;
-                width: auto;
-                flex: 1;
-                min-width: 100px;
-                border-bottom: none;
-                border-right: 1px dashed #ddd;
-                padding: 10px;
-            }
+        .save-section {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1><i class="fas fa-layer-group"></i> Jeolojik Kesit Oluşturucu</h1>
+        <h1>Jeolojik Kesit Oluşturucu</h1>
         
         <div class="input-section">
-            <h2><i class="fas fa-edit"></i> Katman Bilgileri</h2>
+            <h2>Katman Bilgileri</h2>
             <div class="layer-form">
                 <div class="form-group">
                     <label for="layerName">Katman Adı</label>
-                    <input type="text" id="layerName" placeholder="Örnek: Kumtaşı">
+                    <input type="text" id="layerName" placeholder="Katman adı girin">
                 </div>
                 <div class="form-group">
                     <label for="startDepth">Başlangıç Derinliği (m)</label>
-                    <input type="number" id="startDepth" placeholder="0" min="0" step="0.1">
+                    <input type="number" id="startDepth" placeholder="-" min="0" step="0.1">
                 </div>
                 <div class="form-group">
                     <label for="endDepth">Bitiş Derinliği (m)</label>
-                    <input type="number" id="endDepth" placeholder="5.0" min="0" step="0.1">
+                    <input type="number" id="endDepth" placeholder="-" min="0" step="0.1">
                 </div>
                 <div class="form-group">
                     <label>Kayaç Deseni</label>
@@ -469,38 +217,28 @@
                         <!-- Desenler JavaScript ile eklenecek -->
                     </div>
                 </div>
-                <div class="form-group">
-                    <button id="addLayerBtn" class="btn-primary"><i class="fas fa-plus"></i> Katman Ekle</button>
-                    <button id="updateLayerBtn" class="btn-success" style="display:none;"><i class="fas fa-save"></i> Güncelle</button>
-                    <button id="cancelEditBtn" class="btn-outline" style="display:none;"><i class="fas fa-times"></i> İptal</button>
-                </div>
+                <button id="addLayerBtn">Katman Ekle</button>
+                <button id="updateLayerBtn" style="display:none;">Güncelle</button>
+                <button id="cancelEditBtn" style="display:none;">İptal</button>
             </div>
             
             <div class="layer-list" id="layerList">
-                <h3><i class="fas fa-list"></i> Eklenen Katmanlar</h3>
-                <div class="empty-state" id="emptyState">
-                    <i class="fas fa-layer-group"></i>
-                    <p>Henüz katman eklenmedi</p>
-                </div>
+                <h3>Eklenen Katmanlar</h3>
                 <!-- Katmanlar buraya eklenecek -->
             </div>
         </div>
         
         <div class="output-section">
-            <h2><i class="fas fa-chart-bar"></i> Jeolojik Kesit</h2>
-            <button id="generateSectionBtn" class="btn-primary"><i class="fas fa-project-diagram"></i> Kesit Oluştur</button>
-            <div class="section-wrapper" id="sectionWrapper" style="display:none;">
+            <h2>Jeolojik Kesit</h2>
+            <button id="generateSectionBtn">Kesit Oluştur</button>
+            <div class="section-wrapper" id="sectionWrapper">
                 <div class="section-container" id="sectionContainer">
                     <div class="section-legend" id="sectionLegend"></div>
                     <div class="section-pattern" id="sectionPattern"></div>
                 </div>
-                <div class="save-section" id="saveSection">
-                    <button id="saveImageBtn" class="btn-success"><i class="fas fa-download"></i> Görüntüyü Kaydet</button>
+                <div class="save-section" id="saveSection" style="display:none;">
+                    <button id="saveImageBtn" class="save-btn">Görüntüyü Kaydet</button>
                 </div>
-            </div>
-            <div class="empty-state" id="emptySectionState">
-                <i class="fas fa-mountain"></i>
-                <p>Kesit oluşturmak için katman ekleyin ve "Kesit Oluştur" butonuna tıklayın</p>
             </div>
         </div>
     </div>
@@ -508,7 +246,7 @@
     <div id="patternModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2 class="modal-title">Kayaç Deseni Seçimi</h2>
+            <h2>Kayaç Deseni Seçimi</h2>
             <div class="pattern-options" id="modalPatternOptions"></div>
         </div>
     </div>
@@ -516,36 +254,36 @@
     <script>
         // Genişletilmiş desen tanımları (30 farklı desen)
         const patterns = [
-            { name: "Kumtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"2\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/></svg>')", color: "#d2b48c" },
-            { name: "Kiltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a0522d\" opacity=\"0.3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')", color: "#a0522d" },
-            { name: "Kireçtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5dc\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%238b4513\" stroke-width=\"0.5\"/></svg>')", color: "#f5f5dc" },
-            { name: "Konglomera", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23cd853f\"/><circle cx=\"2\" cy=\"2\" r=\"1.5\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%238b4513\"/><circle cx=\"3\" cy=\"5\" r=\"0.8\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"6\" r=\"1.2\" fill=\"%238b4513\"/></svg>')", color: "#cd853f" },
-            { name: "Kum", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f4a460\"/><circle cx=\"1\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"4\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"7\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"2\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"5\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"6\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/></svg>')", color: "#f4a460" },
-            { name: "Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23deb887\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')", color: "#deb887" },
-            { name: "Marn", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23696969\" stroke-width=\"0.5\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')", color: "#d3d3d3" },
-            { name: "Bazalt", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23222222\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23555\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23444\"/></svg>')", color: "#222222" },
-            { name: "Granit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23996633\"/><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23cc9966\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23cc9966\"/><circle cx=\"3\" cy=\"7\" r=\"0.6\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"6\" r=\"0.9\" fill=\"%23cc9966\"/></svg>')", color: "#996633" },
-            { name: "Andezit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><path d=\"M2,2 L6,2 L6,6 L2,6 Z\" fill=\"none\" stroke=\"%23999999\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23777777\"/></svg>')", color: "#666666" },
-            { name: "Diyabaz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23333333\"/><path d=\"M1,1 L7,7 M1,7 L7,1\" stroke=\"%23555555\" stroke-width=\"0.7\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23555555\" stroke-width=\"0.5\"/></svg>')", color: "#333333" },
-            { name: "Gnays", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,0 L8,8 M0,4 L8,4 M0,8 L8,0\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/></svg>')", color: "#808080" },
-            { name: "Mikaşist", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23b3b3b3\"/><path d=\"M0,0 L8,8 M0,2 L8,10 M0,4 L8,12\" stroke=\"%23ffffff\" stroke-width=\"0.5\" transform=\"translate(0,-2)\"/></svg>')", color: "#b3b3b3" },
-            { name: "Kuvarsit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')", color: "#e6e6e6" },
-            { name: "Mermer", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23ffffff\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')", color: "#ffffff" },
-            { name: "Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%234d4d4d\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23666666\" stroke-width=\"0.5\"/></svg>')", color: "#4d4d4d" },
-            { name: "Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.6\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')", color: "#a67c52" },
-            { name: "Kömür", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%231a1a1a\"/><path d=\"M2,2 L6,2 L5,6 L3,6 Z\" fill=\"%23333333\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23222222\"/></svg>')", color: "#1a1a1a" },
-            { name: "Jips", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f0f0f0\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')", color: "#f0f0f0" },
-            { name: "Anhidrit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23b3b3b3\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23b3b3b3\" stroke-width=\"0.5\"/></svg>')", color: "#e6e6e6" },
-            { name: "Tuz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5f5\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')", color: "#f5f5f5" },
-            { name: "Kalker", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6fa\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"4\" cy=\"4\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"2\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/></svg>')", color: "#e6e6fa" },
-            { name: "Dolomit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3e6\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.5\"/></svg>')", color: "#d3d3e6" },
-            { name: "Killi Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23a0a0a0\" stroke-width=\"0.5\"/></svg>')", color: "#808080" },
-            { name: "Silt Taşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23c0c0c0\"/><circle cx=\"2\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"4\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"2\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/></svg>')", color: "#c0c0c0" },
-            { name: "Kumlu Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d2b48c\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/><circle cx=\"2\" cy=\"3\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"6\" cy=\"5\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"4\" cy=\"7\" r=\"0.3\" fill=\"%23a0522d\"/></svg>')", color: "#d2b48c" },
-            { name: "Çakıltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"1.2\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"1\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')", color: "#a67c52" },
-            { name: "Volkanik Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><circle cx=\"2\" cy=\"2\" r=\"0.7\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"3\" r=\"0.5\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"5\" r=\"0.6\" fill=\"%23999999\"/><circle cx=\"3\" cy=\"7\" r=\"0.4\" fill=\"%23999999\"/><circle cx=\"7\" cy=\"6\" r=\"0.8\" fill=\"%23999999\"/></svg>')", color: "#666666" },
-            { name: "Obsidyen", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23000000\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23333333\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23333333\" stroke-width=\"0.5\"/></svg>')", color: "#000000" },
-            { name: "Pomza", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23ffffff\"/><circle cx=\"4\" cy=\"4\" r=\"0.6\" fill=\"%23ffffff\"/><circle cx=\"2\" cy=\"6\" r=\"0.7\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"6\" r=\"0.4\" fill=\"%23ffffff\"/></svg>')", color: "#d3d3d3" }
+            { name: "Kumtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"2\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/></svg>')" },
+            { name: "Kiltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a0522d\" opacity=\"0.3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Kireçtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5dc\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%238b4513\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Konglomera", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23cd853f\"/><circle cx=\"2\" cy=\"2\" r=\"1.5\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%238b4513\"/><circle cx=\"3\" cy=\"5\" r=\"0.8\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"6\" r=\"1.2\" fill=\"%238b4513\"/></svg>')" },
+            { name: "Kum", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f4a460\"/><circle cx=\"1\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"4\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"7\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"2\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"5\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"6\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/></svg>')" },
+            { name: "Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23deb887\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Marn", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23696969\" stroke-width=\"0.5\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Bazalt", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23222222\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23555\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23444\"/></svg>')" },
+            { name: "Granit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23996633\"/><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23cc9966\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23cc9966\"/><circle cx=\"3\" cy=\"7\" r=\"0.6\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"6\" r=\"0.9\" fill=\"%23cc9966\"/></svg>')" },
+            { name: "Andezit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><path d=\"M2,2 L6,2 L6,6 L2,6 Z\" fill=\"none\" stroke=\"%23999999\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23777777\"/></svg>')" },
+            { name: "Diyabaz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23333333\"/><path d=\"M1,1 L7,7 M1,7 L7,1\" stroke=\"%23555555\" stroke-width=\"0.7\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23555555\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Gnays", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,0 L8,8 M0,4 L8,4 M0,8 L8,0\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/></svg>')" },
+            { name: "Mikaşist", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23b3b3b3\"/><path d=\"M0,0 L8,8 M0,2 L8,10 M0,4 L8,12\" stroke=\"%23ffffff\" stroke-width=\"0.5\" transform=\"translate(0,-2)\"/></svg>')" },
+            { name: "Kuvarsit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Mermer", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23ffffff\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%234d4d4d\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23666666\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.6\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')" },
+            { name: "Kömür", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%231a1a1a\"/><path d=\"M2,2 L6,2 L5,6 L3,6 Z\" fill=\"%23333333\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23222222\"/></svg>')" },
+            { name: "Jips", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f0f0f0\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Anhidrit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23b3b3b3\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23b3b3b3\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Tuz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5f5\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Kalker", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6fa\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"4\" cy=\"4\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"2\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/></svg>')" },
+            { name: "Dolomit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3e6\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Killi Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23a0a0a0\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Silt Taşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23c0c0c0\"/><circle cx=\"2\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"4\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"2\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/></svg>')" },
+            { name: "Kumlu Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d2b48c\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/><circle cx=\"2\" cy=\"3\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"6\" cy=\"5\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"4\" cy=\"7\" r=\"0.3\" fill=\"%23a0522d\"/></svg>')" },
+            { name: "Çakıltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"1.2\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"1\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')" },
+            { name: "Volkanik Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><circle cx=\"2\" cy=\"2\" r=\"0.7\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"3\" r=\"0.5\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"5\" r=\"0.6\" fill=\"%23999999\"/><circle cx=\"3\" cy=\"7\" r=\"0.4\" fill=\"%23999999\"/><circle cx=\"7\" cy=\"6\" r=\"0.8\" fill=\"%23999999\"/></svg>')" },
+            { name: "Obsidyen", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23000000\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23333333\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23333333\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Pomza", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23ffffff\"/><circle cx=\"4\" cy=\"4\" r=\"0.6\" fill=\"%23ffffff\"/><circle cx=\"2\" cy=\"6\" r=\"0.7\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"6\" r=\"0.4\" fill=\"%23ffffff\"/></svg>')" }
         ];
 
         // Seçili desen ve düzenleme durumu
@@ -555,9 +293,6 @@
         const modalPatternOptions = document.getElementById('modalPatternOptions');
         const modal = document.getElementById('patternModal');
         const span = document.getElementsByClassName("close")[0];
-        const emptyState = document.getElementById('emptyState');
-        const emptySectionState = document.getElementById('emptySectionState');
-        const sectionWrapper = document.getElementById('sectionWrapper');
         
         // Desen seçeneklerini oluştur
         function createPatternOptions(container, count) {
@@ -570,7 +305,6 @@
                 patternDiv.className = `pattern-option ${i === selectedPatternIndex ? 'selected' : ''}`;
                 patternDiv.title = pattern.name;
                 patternDiv.style.backgroundImage = pattern.pattern;
-                patternDiv.style.backgroundColor = pattern.color;
                 patternDiv.onclick = () => {
                     document.querySelectorAll(`#${container.id} .pattern-option`).forEach(opt => opt.classList.remove('selected'));
                     patternDiv.classList.add('selected');
@@ -580,19 +314,13 @@
                         modal.style.display = "none";
                     }
                 };
-                
-                const patternName = document.createElement('div');
-                patternName.className = 'pattern-name';
-                patternName.textContent = pattern.name;
-                patternDiv.appendChild(patternName);
-                
                 container.appendChild(patternDiv);
             }
             
             if (patterns.length > count && container.id === 'patternOptions') {
                 const moreDiv = document.createElement('div');
                 moreDiv.className = 'pattern-option';
-                moreDiv.innerHTML = '<i class="fas fa-ellipsis-h"></i>';
+                moreDiv.innerHTML = '+';
                 moreDiv.title = "Daha fazla desen göster";
                 moreDiv.style.display = "flex";
                 moreDiv.style.justifyContent = "center";
@@ -639,12 +367,12 @@
         };
         
         function addOrUpdateLayer() {
-            const layerName = document.getElementById('layerName').value.trim();
+            const layerName = document.getElementById('layerName').value;
             const startDepth = parseFloat(document.getElementById('startDepth').value);
             const endDepth = parseFloat(document.getElementById('endDepth').value);
             
             if (!layerName || isNaN(startDepth) || isNaN(endDepth) || endDepth <= startDepth) {
-                alert("Lütfen geçerli katman bilgileri girin:\n- Katman adı boş olamaz\n- Başlangıç derinliği bitişten küçük olmalı\n- Tüm alanlar doldurulmalı");
+                alert("Lütfen geçerli katman bilgileri girin (Başlangıç derinliği bitişten küçük olmalı)");
                 return;
             }
             
@@ -676,7 +404,7 @@
         
         function cancelEdit() {
             editingLayerIndex = -1;
-            document.getElementById('addLayerBtn').style.display = 'inline-flex';
+            document.getElementById('addLayerBtn').style.display = 'inline-block';
             document.getElementById('updateLayerBtn').style.display = 'none';
             document.getElementById('cancelEditBtn').style.display = 'none';
             
@@ -691,59 +419,41 @@
         // Katman listesini güncelle
         function updateLayerList() {
             const layerList = document.getElementById('layerList');
+            layerList.innerHTML = '<h3>Eklenen Katmanlar</h3>';
             
-            // Boş durumu kontrol et
             if (layers.length === 0) {
-                emptyState.style.display = 'block';
-                layerList.innerHTML = '<h3><i class="fas fa-list"></i> Eklenen Katmanlar</h3>';
-                layerList.appendChild(emptyState);
+                layerList.innerHTML += '<p>Henüz katman eklenmedi</p>';
                 return;
-            } else {
-                emptyState.style.display = 'none';
             }
             
-            // Katmanları derinliğe göre sırala
-            layers.sort((a, b) => a.startDepth - b.startDepth);
-            
-            let layersHTML = '';
-            
             layers.forEach((layer, index) => {
-                layersHTML += `
-                    <div class="layer-item">
-                        <div class="layer-info">
-                            <div class="layer-name">${layer.name}</div>
-                            <div class="layer-depth">${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m)</div>
-                            <div class="layer-pattern">
-                                <div class="pattern-preview" style="background-image: ${layer.pattern.pattern}; background-color: ${layer.pattern.color}"></div>
-                                ${layer.pattern.name}
-                            </div>
-                        </div>
-                        <div class="layer-actions">
-                            <button class="edit-btn" data-index="${index}"><i class="fas fa-edit"></i> Düzenle</button>
-                            <button class="delete-btn" data-index="${index}"><i class="fas fa-trash"></i> Sil</button>
-                        </div>
+                const layerItem = document.createElement('div');
+                layerItem.className = 'layer-item';
+                layerItem.innerHTML = `
+                    <div class="layer-info">
+                        <strong>${layer.name}</strong> - 
+                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m) - 
+                        ${layer.pattern.name}
+                    </div>
+                    <div class="layer-actions">
+                        <button class="edit-btn" data-index="${index}">Düzenle</button>
+                        <button class="delete-btn" data-index="${index}">Sil</button>
                     </div>
                 `;
+                layerList.appendChild(layerItem);
             });
-            
-            layerList.innerHTML = `
-                <h3><i class="fas fa-list"></i> Eklenen Katmanlar</h3>
-                ${layersHTML}
-            `;
             
             // Silme butonlarına event ekle
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.onclick = function() {
                     const index = parseInt(this.getAttribute('data-index'));
-                    if (confirm(`${layers[index].name} katmanını silmek istediğinize emin misiniz?`)) {
-                        layers.splice(index, 1);
-                        updateLayerList();
-                        
-                        if (editingLayerIndex === index) {
-                            cancelEdit();
-                        } else if (editingLayerIndex > index) {
-                            editingLayerIndex--;
-                        }
+                    layers.splice(index, 1);
+                    updateLayerList();
+                    
+                    if (editingLayerIndex === index) {
+                        cancelEdit();
+                    } else if (editingLayerIndex > index) {
+                        editingLayerIndex--;
                     }
                 };
             });
@@ -766,8 +476,8 @@
                     // Düzenleme moduna geç
                     editingLayerIndex = index;
                     document.getElementById('addLayerBtn').style.display = 'none';
-                    document.getElementById('updateLayerBtn').style.display = 'inline-flex';
-                    document.getElementById('cancelEditBtn').style.display = 'inline-flex';
+                    document.getElementById('updateLayerBtn').style.display = 'inline-block';
+                    document.getElementById('cancelEditBtn').style.display = 'inline-block';
                 };
             });
         }
@@ -790,14 +500,13 @@
             
             // Kesit yüksekliğini belirle (en alttaki katmanın bitiş derinliği)
             const sectionHeight = layers[layers.length - 1].endDepth;
-            const pxPerMeter = 50; // Her metre için 50 piksel
-            sectionPattern.style.height = `${sectionHeight * pxPerMeter}px`;
-            sectionLegend.style.height = `${sectionHeight * pxPerMeter}px`;
+            sectionPattern.style.height = `${sectionHeight * 6}px`;
+            sectionLegend.style.height = `${sectionHeight * 6}px`;
             
             // Katmanları çiz
             layers.forEach((layer, index) => {
-                const layerHeight = (layer.endDepth - layer.startDepth) * pxPerMeter;
-                const layerTop = layer.startDepth * pxPerMeter;
+                const layerHeight = (layer.endDepth - layer.startDepth) * 6;
+                const layerTop = layer.startDepth * 6;
                 
                 // Lejant kısmı
                 const legendItem = document.createElement('div');
@@ -806,7 +515,6 @@
                 legendItem.style.top = `${layerTop}px`;
                 legendItem.innerHTML = `
                     <div><strong>${layer.name}</strong></div>
-                    <div>${layer.startDepth}m - ${layer.endDepth}m</div>
                     <div>${(layer.endDepth - layer.startDepth).toFixed(1)}m</div>
                 `;
                 sectionLegend.appendChild(legendItem);
@@ -817,7 +525,7 @@
                 patternLayer.style.height = `${layerHeight}px`;
                 patternLayer.style.top = `${layerTop}px`;
                 patternLayer.style.backgroundImage = layer.pattern.pattern;
-                patternLayer.style.backgroundColor = layer.pattern.color + '80'; // %50 opacity
+                patternLayer.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
                 sectionPattern.appendChild(patternLayer);
                 
                 // Derinlik işaretleri
@@ -831,32 +539,25 @@
                 if (index === layers.length - 1) {
                     const endDepthMark = document.createElement('div');
                     endDepthMark.className = 'depth-mark';
-                    endDepthMark.style.top = `${(layer.endDepth) * pxPerMeter}px`;
+                    endDepthMark.style.top = `${(layer.endDepth) * 6}px`;
                     endDepthMark.innerHTML = `<span class="depth-label">${layer.endDepth}m</span>`;
                     sectionPattern.appendChild(endDepthMark);
                 }
             });
             
-            // Kesit bölümünü göster
-            sectionWrapper.style.display = 'block';
-            emptySectionState.style.display = 'none';
+            // Kaydet butonunu göster
+            document.getElementById('saveSection').style.display = 'block';
         };
         
         // Görüntüyü kaydetme fonksiyonu
         document.getElementById('saveImageBtn').onclick = function() {
             const sectionWrapper = document.getElementById('sectionWrapper');
-            const fileName = `jeolojik-kesit-${new Date().toISOString().slice(0,10)}.png`;
             
             // Kesit bölümünü görüntüye dönüştür
-            html2canvas(sectionWrapper, {
-                scale: 2,
-                logging: false,
-                useCORS: true,
-                allowTaint: true
-            }).then(canvas => {
+            html2canvas(sectionWrapper).then(canvas => {
                 // Görüntüyü indirme bağlantısı oluştur
                 const link = document.createElement('a');
-                link.download = fileName;
+                link.download = 'jeolojik-kesit.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
