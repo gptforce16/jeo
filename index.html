@@ -190,6 +190,62 @@
         .save-section {
             margin-top: 10px;
         }
+        
+        /* Kuyu görseli için yeni stiller */
+        .well-container {
+            display: flex;
+            margin-left: 20px;
+            position: relative;
+        }
+        .well {
+            width: 100px;
+            border: 2px solid #333;
+            background-color: #e9e9e9;
+            position: relative;
+        }
+        .filter-mark {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: red;
+            left: 0;
+        }
+        .filter-info {
+            position: absolute;
+            right: -160px;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 12px;
+        }
+        .well-label {
+            position: absolute;
+            right: 110px;
+            width: 150px;
+            text-align: right;
+            font-size: 12px;
+        }
+        .depth-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background-color: #ccc;
+            left: 0;
+        }
+        .depth-label-well {
+            position: absolute;
+            right: -50px;
+            transform: translateY(-50%);
+            background-color: white;
+            padding: 0 5px;
+            font-size: 11px;
+            color: #666;
+        }
+        .filter-input-group {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -222,6 +278,13 @@
                 <button id="cancelEditBtn" style="display:none;">İptal</button>
             </div>
             
+            <div class="filter-input-group">
+                <div class="form-group">
+                    <label for="filterDepths">Filtre Derinlikleri (virgülle ayırın):</label>
+                    <input type="text" id="filterDepths" placeholder="8,16,40" value="8,16,40">
+                </div>
+            </div>
+            
             <div class="layer-list" id="layerList">
                 <h3>Eklenen Katmanlar</h3>
                 <!-- Katmanlar buraya eklenecek -->
@@ -232,9 +295,14 @@
             <h2>Jeolojik Kesit</h2>
             <button id="generateSectionBtn">Kesit Oluştur</button>
             <div class="section-wrapper" id="sectionWrapper">
-                <div class="section-container" id="sectionContainer">
-                    <div class="section-legend" id="sectionLegend"></div>
-                    <div class="section-pattern" id="sectionPattern"></div>
+                <div style="display: flex;">
+                    <div class="section-container" id="sectionContainer">
+                        <div class="section-legend" id="sectionLegend"></div>
+                        <div class="section-pattern" id="sectionPattern"></div>
+                    </div>
+                    <div class="well-container">
+                        <div class="well" id="well"></div>
+                    </div>
                 </div>
                 <div class="save-section" id="saveSection" style="display:none;">
                     <button id="saveImageBtn" class="save-btn">Görüntüyü Kaydet</button>
@@ -482,6 +550,58 @@
             });
         }
         
+        // Kuyu görselini oluştur
+        function drawWell(sectionHeight) {
+            const well = document.getElementById('well');
+            well.innerHTML = '';
+            
+            // Filtre derinliklerini al ve diziye çevir
+            const depthInput = document.getElementById('filterDepths').value;
+            const depths = depthInput.split(',').map(d => parseFloat(d.trim()));
+            
+            // Kuyu yüksekliğini belirle (kesit yüksekliğiyle aynı)
+            const wellHeight = sectionHeight * 20; // px
+            const pxPerMeter = wellHeight / sectionHeight;
+            
+            // Kuyu görselini oluştur
+            well.style.height = `${wellHeight}px`;
+            
+            // Her filtre için işaretleme yap
+            depths.forEach(depth => {
+                const filterPosition = depth + 4; // Her filtreye 4m ekle
+                const positionPx = filterPosition * pxPerMeter;
+                
+                // Filtre işaretlemesi
+                const mark = document.createElement('div');
+                mark.className = 'filter-mark';
+                mark.style.top = `${positionPx}px`;
+                well.appendChild(mark);
+                
+                // Filtre bilgisi
+                const info = document.createElement('div');
+                info.className = 'filter-info';
+                info.style.top = `${positionPx}px`;
+                info.textContent = `Filtre: ${depth}m (${filterPosition}m)`;
+                well.appendChild(info);
+            });
+            
+            // Derinlik çizgileri ve etiketleri ekle
+            for (let i = 0; i <= sectionHeight; i += 5) {
+                const positionPx = i * pxPerMeter;
+                
+                const depthLine = document.createElement('div');
+                depthLine.className = 'depth-line';
+                depthLine.style.top = `${positionPx}px`;
+                well.appendChild(depthLine);
+                
+                const depthLabel = document.createElement('div');
+                depthLabel.className = 'depth-label-well';
+                depthLabel.style.top = `${positionPx}px`;
+                depthLabel.textContent = `${i}m`;
+                well.appendChild(depthLabel);
+            }
+        }
+        
         // Kesit oluşturma fonksiyonu
         document.getElementById('generateSectionBtn').onclick = function() {
             if (layers.length === 0) {
@@ -544,6 +664,9 @@
                     sectionPattern.appendChild(endDepthMark);
                 }
             });
+            
+            // Kuyu görselini oluştur
+            drawWell(sectionHeight);
             
             // Kaydet butonunu göster
             document.getElementById('saveSection').style.display = 'block';
