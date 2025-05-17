@@ -104,6 +104,7 @@
             width: 100%;
             position: absolute;
             left: 0;
+            background-repeat: repeat;
         }
         .depth-mark {
             position: absolute;
@@ -151,6 +152,7 @@
             height: 50px;
             border: 1px solid #ddd;
             cursor: pointer;
+            background-repeat: repeat;
         }
         .pattern-option.selected {
             border: 2px solid #4CAF50;
@@ -207,8 +209,8 @@
         .filter-mark {
             position: absolute;
             width: 100%;
-            height: 2px;
-            background-color: red;
+            height: 4px;
+            background-color: rgba(255, 0, 0, 0.5);
             left: 0;
         }
         .filter-info {
@@ -249,6 +251,14 @@
         }
         .section-and-well {
             display: flex;
+            align-items: flex-start;
+        }
+        .filter-zone {
+            position: absolute;
+            width: 100%;
+            background-color: rgba(0, 255, 0, 0.2);
+            border-top: 1px solid green;
+            border-bottom: 1px solid green;
         }
     </style>
 </head>
@@ -572,25 +582,28 @@
             
             // Her filtre için işaretleme yap
             depths.forEach(depth => {
-                const filterPosition = depth + 4; // Her filtreye 4m ekle
-                const positionPx = filterPosition * pxPerMeter;
+                const filterStart = depth;
+                const filterEnd = depth + 4; // 4m'lik filtre bölgesi
+                const startPx = filterStart * pxPerMeter;
+                const endPx = filterEnd * pxPerMeter;
                 
-                // Filtre işaretlemesi
-                const mark = document.createElement('div');
-                mark.className = 'filter-mark';
-                mark.style.top = `${positionPx}px`;
-                well.appendChild(mark);
+                // Filtre bölgesini renklendir
+                const zone = document.createElement('div');
+                zone.className = 'filter-zone';
+                zone.style.top = `${startPx}px`;
+                zone.style.height = `${endPx - startPx}px`;
+                well.appendChild(zone);
                 
                 // Filtre bilgisi
                 const info = document.createElement('div');
                 info.className = 'filter-info';
-                info.style.top = `${positionPx}px`;
-                info.textContent = `Filtre: ${depth}m (${filterPosition}m)`;
+                info.style.top = `${startPx + (endPx - startPx)/2}px`;
+                info.textContent = `Filtre: ${filterStart}m-${filterEnd}m`;
                 well.appendChild(info);
             });
             
-            // Derinlik çizgileri ve etiketleri ekle
-            for (let i = 0; i <= sectionHeight; i += 5) {
+            // Derinlik çizgileri ve etiketleri ekle (4m aralıklarla)
+            for (let i = 0; i <= sectionHeight; i += 4) {
                 const positionPx = i * pxPerMeter;
                 
                 const depthLine = document.createElement('div');
@@ -598,11 +611,14 @@
                 depthLine.style.top = `${positionPx}px`;
                 well.appendChild(depthLine);
                 
-                const depthLabel = document.createElement('div');
-                depthLabel.className = 'depth-label-well';
-                depthLabel.style.top = `${positionPx}px`;
-                depthLabel.textContent = `${i}m`;
-                well.appendChild(depthLabel);
+                // Sadece 4'ün katlarını yaz (0,4,8,12...)
+                if (i % 4 === 0) {
+                    const depthLabel = document.createElement('div');
+                    depthLabel.className = 'depth-label-well';
+                    depthLabel.style.top = `${positionPx}px`;
+                    depthLabel.textContent = `${i}m`;
+                    well.appendChild(depthLabel);
+                }
             }
         }
         
