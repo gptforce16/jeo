@@ -500,13 +500,13 @@
             
             // Kesit yüksekliğini belirle (en alttaki katmanın bitiş derinliği)
             const sectionHeight = layers[layers.length - 1].endDepth;
-            sectionPattern.style.height = `${sectionHeight * 20}px`;
-            sectionLegend.style.height = `${sectionHeight * 20}px`;
+            sectionPattern.style.height = `${sectionHeight * 4}px`;
+            sectionLegend.style.height = `${sectionHeight * 4}px`;
             
             // Katmanları çiz
             layers.forEach((layer, index) => {
-                const layerHeight = (layer.endDepth - layer.startDepth) * 20;
-                const layerTop = layer.startDepth * 20;
+                const layerHeight = (layer.endDepth - layer.startDepth) * 4;
+                const layerTop = layer.startDepth * 4;
                 
                 // Lejant kısmı
                 const legendItem = document.createElement('div');
@@ -539,7 +539,7 @@
                 if (index === layers.length - 1) {
                     const endDepthMark = document.createElement('div');
                     endDepthMark.className = 'depth-mark';
-                    endDepthMark.style.top = `${(layer.endDepth) * 20}px`;
+                    endDepthMark.style.top = `${(layer.endDepth) * 4}px`;
                     endDepthMark.innerHTML = `<span class="depth-label">${layer.endDepth}m</span>`;
                     sectionPattern.appendChild(endDepthMark);
                 }
