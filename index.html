@@ -83,15 +83,18 @@
             width: 150px;
             border-right: 1px solid #000;
             position: relative;
+            flex-shrink: 0;
         }
         .section-pattern {
             flex-grow: 1;
             position: relative;
             border-right: 1px solid #000;
+            min-width: 300px;
         }
         .section-well {
             width: 200px;
             position: relative;
+            flex-shrink: 0;
         }
         .legend-item {
             position: absolute;
@@ -137,6 +140,8 @@
             font-size: 12px;
             border: 1px solid #ccc;
             box-sizing: border-box;
+            padding: 2px;
+            background-color: rgba(255,255,255,0.7);
         }
         .delete-btn { background-color: #f44336; }
         .edit-btn { background-color: #2196F3; }
@@ -148,22 +153,18 @@
         /* Mobil responsive tasarım */
         @media (max-width: 768px) {
             .section-container {
-                flex-wrap: nowrap;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 padding-bottom: 15px;
             }
             .section-legend {
                 width: 120px;
-                flex-shrink: 0;
             }
             .section-pattern {
                 min-width: 250px;
-                flex-shrink: 0;
             }
             .section-well {
                 width: 180px;
-                flex-shrink: 0;
             }
             /* Kaydırma çubuğunu gizle */
             .section-container::-webkit-scrollbar {
@@ -188,11 +189,11 @@
                 </div>
                 <div class="form-group">
                     <label for="startDepth">Başlangıç Derinliği (m)</label>
-                    <input type="number" id="startDepth" placeholder="-" min="0" step="0.1">
+                    <input type="number" id="startDepth" placeholder="0" min="0" step="0.1">
                 </div>
                 <div class="form-group">
                     <label for="endDepth">Bitiş Derinliği (m)</label>
-                    <input type="number" id="endDepth" placeholder="-" min="0" step="0.1">
+                    <input type="number" id="endDepth" placeholder="1.0" min="0" step="0.1">
                 </div>
                 <button id="addLayerBtn">Katman Ekle</button>
             </div>
@@ -219,15 +220,16 @@
     <script>
         // Desen tanımları
         const patterns = [
-            { name: "Kumtaşı", color: "#d2b48c" },
-            { name: "Kiltaşı", color: "#a0522d" },
-            { name: "Kireçtaşı", color: "#f5f5dc" },
-            { name: "Konglomera", color: "#cd853f" },
-            { name: "Kum", color: "#f4a460" }
+            { name: "Kumtaşı", color: "#d2b48c", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><circle cx='2' cy='2' r='1' fill='%23d2b48c'/><circle cx='6' cy='2' r='1' fill='%23d2b48c'/><circle cx='4' cy='4' r='1' fill='%23d2b48c'/><circle cx='2' cy='6' r='1' fill='%23d2b48c'/><circle cx='6' cy='6' r='1' fill='%23d2b48c'/></svg>')" },
+            { name: "Kiltaşı", color: "#a0522d", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23a0522d' opacity='0.3'/><path d='M0,0 L8,8 M0,8 L8,0' stroke='%23a0522d' stroke-width='0.5'/></svg>')" },
+            { name: "Kireçtaşı", color: "#f5f5dc", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23f5f5dc'/><circle cx='4' cy='4' r='2' fill='none' stroke='%238b4513' stroke-width='0.5'/></svg>')" },
+            { name: "Konglomera", color: "#cd853f", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23cd853f'/><circle cx='2' cy='2' r='1.5' fill='%238b4513'/><circle cx='6' cy='2' r='1' fill='%238b4513'/><circle cx='3' cy='5' r='0.8' fill='%238b4513'/><circle cx='6' cy='6' r='1.2' fill='%238b4513'/></svg>')" },
+            { name: "Kum", color: "#f4a460", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23f4a460'/><circle cx='1' cy='1' r='0.5' fill='%23d2691e'/><circle cx='4' cy='1' r='0.5' fill='%23d2691e'/><circle cx='7' cy='1' r='0.5' fill='%23d2691e'/><circle cx='2' cy='4' r='0.5' fill='%23d2691e'/><circle cx='5' cy='4' r='0.5' fill='%23d2691e'/><circle cx='3' cy='7' r='0.5' fill='%23d2691e'/><circle cx='6' cy='7' r='0.5' fill='%23d2691e'/></svg>')" }
         ];
 
         // Katman listesi
         const layers = [];
+        let editingLayerIndex = -1;
         
         // Katman ekleme fonksiyonu
         document.getElementById('addLayerBtn').onclick = function() {
@@ -236,7 +238,7 @@
             const endDepth = parseFloat(document.getElementById('endDepth').value);
             
             if (!layerName || isNaN(startDepth) || isNaN(endDepth) || endDepth <= startDepth) {
-                alert("Lütfen geçerli katman bilgileri girin");
+                alert("Lütfen geçerli katman bilgileri girin (Başlangıç derinliği bitişten küçük olmalı)");
                 return;
             }
             
@@ -272,9 +274,10 @@
                 layerItem.innerHTML = `
                     <div class="layer-info">
                         <strong>${layer.name}</strong> - 
-                        ${layer.startDepth}m - ${layer.endDepth}m
+                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m)
                     </div>
                     <div class="layer-actions">
+                        <button class="edit-btn" data-index="${index}">Düzenle</button>
                         <button class="delete-btn" data-index="${index}">Sil</button>
                     </div>
                 `;
@@ -289,9 +292,23 @@
                     updateLayerList();
                 };
             });
+            
+            // Düzenle butonlarına event ekle
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const layer = layers[index];
+                    
+                    document.getElementById('layerName').value = layer.name;
+                    document.getElementById('startDepth').value = layer.startDepth;
+                    document.getElementById('endDepth').value = layer.endDepth;
+                    
+                    editingLayerIndex = index;
+                };
+            });
         }
         
-        // Kuyu logu için rastgele değer üret
+        // Rastgele değer üretme
         function getRandomValue(min, max) {
             return (Math.random() * (max - min) + min).toFixed(1);
         }
@@ -335,6 +352,7 @@
                 legendItem.innerHTML = `
                     <div><strong>${layer.name}</strong></div>
                     <div>${layer.startDepth}m - ${layer.endDepth}m</div>
+                    <div>${(layer.endDepth - layer.startDepth).toFixed(1)}m</div>
                 `;
                 sectionLegend.appendChild(legendItem);
                 
@@ -343,7 +361,7 @@
                 patternLayer.className = 'pattern-layer';
                 patternLayer.style.height = `${layerHeight}px`;
                 patternLayer.style.top = `${layerTop}px`;
-                patternLayer.style.backgroundColor = layer.pattern.color;
+                patternLayer.style.backgroundImage = layer.pattern.pattern;
                 sectionPattern.appendChild(patternLayer);
                 
                 // 3. Kuyu Logu
