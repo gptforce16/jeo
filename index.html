@@ -143,6 +143,21 @@
             padding: 2px;
             background-color: rgba(255,255,255,0.7);
         }
+        .pattern-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .pattern-option {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .pattern-option.selected {
+            border: 2px solid #4CAF50;
+        }
         .delete-btn { background-color: #f44336; }
         .edit-btn { background-color: #2196F3; }
         .save-btn { background-color: #ff9800; }
@@ -173,6 +188,10 @@
             .layer-form {
                 flex-direction: column;
             }
+            .pattern-options {
+                max-width: 100%;
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
@@ -195,7 +214,15 @@
                     <label for="endDepth">Bitiş Derinliği (m)</label>
                     <input type="number" id="endDepth" placeholder="1.0" min="0" step="0.1">
                 </div>
+                <div class="form-group">
+                    <label>Kayaç Deseni</label>
+                    <div class="pattern-options" id="patternOptions">
+                        <!-- Desenler JavaScript ile eklenecek -->
+                    </div>
+                </div>
                 <button id="addLayerBtn">Katman Ekle</button>
+                <button id="updateLayerBtn" style="display:none;">Güncelle</button>
+                <button id="cancelEditBtn" style="display:none;">İptal</button>
             </div>
             
             <div class="layer-list" id="layerList">
@@ -220,19 +247,57 @@
     <script>
         // Desen tanımları
         const patterns = [
-            { name: "Kumtaşı", color: "#d2b48c", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><circle cx='2' cy='2' r='1' fill='%23d2b48c'/><circle cx='6' cy='2' r='1' fill='%23d2b48c'/><circle cx='4' cy='4' r='1' fill='%23d2b48c'/><circle cx='2' cy='6' r='1' fill='%23d2b48c'/><circle cx='6' cy='6' r='1' fill='%23d2b48c'/></svg>')" },
-            { name: "Kiltaşı", color: "#a0522d", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23a0522d' opacity='0.3'/><path d='M0,0 L8,8 M0,8 L8,0' stroke='%23a0522d' stroke-width='0.5'/></svg>')" },
-            { name: "Kireçtaşı", color: "#f5f5dc", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23f5f5dc'/><circle cx='4' cy='4' r='2' fill='none' stroke='%238b4513' stroke-width='0.5'/></svg>')" },
-            { name: "Konglomera", color: "#cd853f", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23cd853f'/><circle cx='2' cy='2' r='1.5' fill='%238b4513'/><circle cx='6' cy='2' r='1' fill='%238b4513'/><circle cx='3' cy='5' r='0.8' fill='%238b4513'/><circle cx='6' cy='6' r='1.2' fill='%238b4513'/></svg>')" },
-            { name: "Kum", color: "#f4a460", pattern: "url('data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23f4a460'/><circle cx='1' cy='1' r='0.5' fill='%23d2691e'/><circle cx='4' cy='1' r='0.5' fill='%23d2691e'/><circle cx='7' cy='1' r='0.5' fill='%23d2691e'/><circle cx='2' cy='4' r='0.5' fill='%23d2691e'/><circle cx='5' cy='4' r='0.5' fill='%23d2691e'/><circle cx='3' cy='7' r='0.5' fill='%23d2691e'/><circle cx='6' cy='7' r='0.5' fill='%23d2691e'/></svg>')" }
+            { name: "Kumtaşı", color: "#d2b48c", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"2\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/></svg>')" },
+            { name: "Kiltaşı", color: "#a0522d", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23a0522d\" opacity=\"0.3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Kireçtaşı", color: "#f5f5dc", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5dc\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%238b4513\" stroke-width=\"0.5\"/></svg>')" },
+            { name: "Konglomera", color: "#cd853f", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23cd853f\"/><circle cx=\"2\" cy=\"2\" r=\"1.5\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%238b4513\"/><circle cx=\"3\" cy=\"5\" r=\"0.8\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"6\" r=\"1.2\" fill=\"%238b4513\"/></svg>')" },
+            { name: "Kum", color: "#f4a460", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23f4a460\"/><circle cx=\"1\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"4\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"7\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"2\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"5\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"6\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/></svg>')" }
         ];
 
+        // Seçili desen ve düzenleme durumu
+        let selectedPatternIndex = 0;
+        let editingLayerIndex = -1;
+        const patternOptions = document.getElementById('patternOptions');
+        
+        // Desen seçeneklerini oluştur
+        function createPatternOptions() {
+            patternOptions.innerHTML = '';
+            patterns.forEach((pattern, index) => {
+                const patternDiv = document.createElement('div');
+                patternDiv.className = `pattern-option ${index === selectedPatternIndex ? 'selected' : ''}`;
+                patternDiv.title = pattern.name;
+                patternDiv.style.backgroundImage = pattern.pattern;
+                patternDiv.onclick = () => {
+                    document.querySelectorAll('.pattern-option').forEach(opt => opt.classList.remove('selected'));
+                    patternDiv.classList.add('selected');
+                    selectedPatternIndex = index;
+                };
+                patternOptions.appendChild(patternDiv);
+            });
+        }
+        
+        // Sayfa yüklendiğinde desen seçeneklerini oluştur
+        createPatternOptions();
+        
         // Katman listesi
         const layers = [];
-        let editingLayerIndex = -1;
         
         // Katman ekleme fonksiyonu
         document.getElementById('addLayerBtn').onclick = function() {
+            addOrUpdateLayer();
+        };
+        
+        // Katman güncelleme fonksiyonu
+        document.getElementById('updateLayerBtn').onclick = function() {
+            addOrUpdateLayer();
+        };
+        
+        // Düzenleme iptal fonksiyonu
+        document.getElementById('cancelEditBtn').onclick = function() {
+            cancelEdit();
+        };
+        
+        function addOrUpdateLayer() {
             const layerName = document.getElementById('layerName').value;
             const startDepth = parseFloat(document.getElementById('startDepth').value);
             const endDepth = parseFloat(document.getElementById('endDepth').value);
@@ -246,17 +311,41 @@
                 name: layerName,
                 startDepth: startDepth,
                 endDepth: endDepth,
-                pattern: patterns[layers.length % patterns.length] // Döngüsel desen seçimi
+                pattern: patterns[selectedPatternIndex]
             };
             
-            layers.push(layer);
+            if (editingLayerIndex >= 0) {
+                // Güncelleme modunda
+                layers[editingLayerIndex] = layer;
+                cancelEdit();
+            } else {
+                // Yeni ekleme modunda
+                layers.push(layer);
+            }
+            
             updateLayerList();
             
             // Formu temizle
             document.getElementById('layerName').value = '';
             document.getElementById('startDepth').value = endDepth;
             document.getElementById('endDepth').value = '';
-        };
+            selectedPatternIndex = 0;
+            createPatternOptions();
+        }
+        
+        function cancelEdit() {
+            editingLayerIndex = -1;
+            document.getElementById('addLayerBtn').style.display = 'inline-block';
+            document.getElementById('updateLayerBtn').style.display = 'none';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            
+            // Formu temizle
+            document.getElementById('layerName').value = '';
+            document.getElementById('startDepth').value = '';
+            document.getElementById('endDepth').value = '';
+            selectedPatternIndex = 0;
+            createPatternOptions();
+        }
         
         // Katman listesini güncelle
         function updateLayerList() {
@@ -274,7 +363,8 @@
                 layerItem.innerHTML = `
                     <div class="layer-info">
                         <strong>${layer.name}</strong> - 
-                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m)
+                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m) - 
+                        ${layer.pattern.name}
                     </div>
                     <div class="layer-actions">
                         <button class="edit-btn" data-index="${index}">Düzenle</button>
@@ -290,6 +380,12 @@
                     const index = parseInt(this.getAttribute('data-index'));
                     layers.splice(index, 1);
                     updateLayerList();
+                    
+                    if (editingLayerIndex === index) {
+                        cancelEdit();
+                    } else if (editingLayerIndex > index) {
+                        editingLayerIndex--;
+                    }
                 };
             });
             
@@ -299,11 +395,20 @@
                     const index = parseInt(this.getAttribute('data-index'));
                     const layer = layers[index];
                     
+                    // Formu doldur
                     document.getElementById('layerName').value = layer.name;
                     document.getElementById('startDepth').value = layer.startDepth;
                     document.getElementById('endDepth').value = layer.endDepth;
                     
+                    // Deseni seç
+                    selectedPatternIndex = patterns.findIndex(p => p.name === layer.pattern.name);
+                    createPatternOptions();
+                    
+                    // Düzenleme moduna geç
                     editingLayerIndex = index;
+                    document.getElementById('addLayerBtn').style.display = 'none';
+                    document.getElementById('updateLayerBtn').style.display = 'inline-block';
+                    document.getElementById('cancelEditBtn').style.display = 'inline-block';
                 };
             });
         }
