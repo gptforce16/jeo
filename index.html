@@ -254,12 +254,62 @@
     <script>
         // Desen tanımları
         const patterns = [
-            { name: "Kumtaşı", color: "#d2b48c", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"2\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/></svg>')" },
-            { name: "Kiltaşı", color: "#a0522d", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23a0522d\" opacity=\"0.3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Kireçtaşı", color: "#f5f5dc", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5dc\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%238b4513\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Konglomera", color: "#cd853f", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23cd853f\"/><circle cx=\"2\" cy=\"2\" r=\"1.5\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%238b4513\"/><circle cx=\"3\" cy=\"5\" r=\"0.8\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"6\" r=\"1.2\" fill=\"%238b4513\"/></svg>')" },
-            { name: "Kum", color: "#f4a460", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23f4a460\"/><circle cx=\"1\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"4\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"7\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"2\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"5\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"6\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/></svg>')" }
-        ];
+  {
+    name: "Toprak",
+    color: "#deb887",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><circle cx=\"3\" cy=\"3\" r=\"1\" fill=\"%23a0522d\" /></svg>')"
+  },
+  {
+    name: "Alüvyon",
+    color: "#f5deb3",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><rect x=\"0\" y=\"0\" width=\"3\" height=\"3\" fill=\"%23d2b48c\" /></svg>')"
+  },
+  {
+    name: "Kil",
+    color: "#d8bfd8",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><path d=\"M0,0 L6,6 M0,6 L6,0\" stroke=\"%23ba55d3\" stroke-width=\"0.5\" /></svg>')"
+  },
+  {
+    name: "Kum",
+    color: "#f0e68c",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23ccc\" /></svg>')"
+  },
+  {
+    name: "Çakıl",
+    color: "#a9a9a9",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><circle cx=\"2\" cy=\"2\" r=\"2\" fill=\"%23666\" /><circle cx=\"6\" cy=\"6\" r=\"1.5\" fill=\"%23666\" /></svg>')"
+  },
+  {
+    name: "Şist",
+    color: "#aaa",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><path d=\"M0,0 L6,6\" stroke=\"%23888\" stroke-width=\"1\" /></svg>')"
+  },
+  {
+    name: "Kireçtaşı",
+    color: "#f5f5dc",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"><rect width=\"10\" height=\"10\" fill=\"%23f5f5dc\"/><path d=\"M0 5h10M5 0v10\" stroke=\"%238b4513\" stroke-width=\"0.5\"/></svg>')"
+  },
+  {
+    name: "Andezit",
+    color: "#888",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><path d=\"M0,0 L6,6\" stroke=\"%23444\" stroke-width=\"1\" /></svg>')"
+  },
+  {
+    name: "Granit",
+    color: "#dcdcdc",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23888\" /></svg>')"
+  },
+  {
+    name: "Volkanit",
+    color: "#3e3e3e",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><path d=\"M0,0 L6,6\" stroke=\"%23555\" stroke-width=\"1\" /></svg>')"
+  },
+  {
+    name: "Tüf",
+    color: "#e0cda9",
+    pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><rect x=\"0\" y=\"0\" width=\"6\" height=\"1\" fill=\"%23bfa06d\"/></svg>')"
+  }
+];
 
         // Seçili desen ve düzenleme durumu
         let selectedPatternIndex = 0;
