@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeolojik Kesit ve Kuyu Logu</title>
+    <title>Jeolojik Kesit ve Filtre Analizi</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
@@ -15,6 +15,8 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
         .input-section, .output-section {
             border: 1px solid #ccc;
@@ -77,10 +79,10 @@
             padding: 10px;
             border: 1px solid #ddd;
             position: relative;
-            gap: 10px;
+            gap: 5px;
         }
         .section-legend {
-            width: 150px;
+            width: 120px;
             border-right: 1px solid #000;
             position: relative;
             flex-shrink: 0;
@@ -89,10 +91,10 @@
             flex-grow: 1;
             position: relative;
             border-right: 1px solid #000;
-            min-width: 300px;
+            min-width: 200px;
         }
         .section-well {
-            width: 200px;
+            width: 150px;
             position: relative;
             flex-shrink: 0;
         }
@@ -107,6 +109,7 @@
             box-sizing: border-box;
             padding: 0 5px;
             border-bottom: 1px dashed #ccc;
+            font-size: 12px;
         }
         .pattern-layer, .well-layer {
             width: 100%;
@@ -119,29 +122,19 @@
             width: 100%;
             border-top: 1px solid #000;
             text-align: center;
-            font-size: 12px;
+            font-size: 10px;
         }
-        .well-mark {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            text-align: center;
-            font-size: 12px;
-        }
-        .depth-label, .well-label {
+        .depth-label {
             background-color: white;
             padding: 0 5px;
         }
-        .well-property {
+        .filter-zone {
             position: absolute;
+            left: 0;
             width: 100%;
-            text-align: center;
-            font-size: 12px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            padding: 2px;
-            background-color: rgba(255,255,255,0.7);
+            background-color: rgba(0,0,255,0.1);
+            border-top: 1px dashed blue;
+            border-bottom: 1px dashed blue;
         }
         .pattern-options {
             display: flex;
@@ -150,8 +143,8 @@
             margin-top: 10px;
         }
         .pattern-option {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border: 1px solid #ddd;
             cursor: pointer;
         }
@@ -173,15 +166,14 @@
                 padding-bottom: 15px;
             }
             .section-legend {
-                width: 120px;
+                width: 100px;
             }
             .section-pattern {
-                min-width: 250px;
+                min-width: 180px;
             }
             .section-well {
-                width: 180px;
+                width: 120px;
             }
-            /* Kaydırma çubuğunu gizle */
             .section-container::-webkit-scrollbar {
                 display: none;
             }
@@ -197,7 +189,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Jeolojik Kesit ve Kuyu Logu Oluşturucu</h1>
+        <h1>Jeolojik Kesit ve Filtre Analizi</h1>
         
         <div class="input-section">
             <h2>Katman Bilgileri</h2>
@@ -220,6 +212,10 @@
                         <!-- Desenler JavaScript ile eklenecek -->
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="filterDepths">Filtre Yerleri (virgülle ayırın)</label>
+                    <input type="text" id="filterDepths" placeholder="8, 15, 22">
+                </div>
                 <button id="addLayerBtn">Katman Ekle</button>
                 <button id="updateLayerBtn" style="display:none;">Güncelle</button>
                 <button id="cancelEditBtn" style="display:none;">İptal</button>
@@ -231,7 +227,7 @@
         </div>
         
         <div class="output-section">
-            <h2>Jeolojik Kesit ve Kuyu Logu</h2>
+            <h2>Jeolojik Kesit</h2>
             <button id="generateSectionBtn">Kesit Oluştur</button>
             <div class="section-container" id="sectionContainer">
                 <div class="section-legend" id="sectionLegend"></div>
@@ -413,9 +409,14 @@
             });
         }
         
-        // Rastgele değer üretme
-        function getRandomValue(min, max) {
-            return (Math.random() * (max - min) + min).toFixed(1);
+        // Filtre derinliklerini parse et
+        function parseFilterDepths() {
+            const filterInput = document.getElementById('filterDepths').value;
+            if (!filterInput.trim()) return [];
+            
+            return filterInput.split(',')
+                .map(item => parseFloat(item.trim()))
+                .filter(item => !isNaN(item));
         }
         
         // Kesit oluşturma fonksiyonu
@@ -444,6 +445,28 @@
             sectionLegend.style.height = `${sectionHeight}px`;
             sectionWell.style.height = `${sectionHeight}px`;
             
+            // Filtre bölgelerini al
+            const filterDepths = parseFilterDepths();
+            
+            // Filtre bölgelerini çiz
+            filterDepths.forEach(depth => {
+                const filterTop = depth * scaleFactor;
+                const filterHeight = 4 * scaleFactor;
+                
+                const filterZone = document.createElement('div');
+                filterZone.className = 'filter-zone';
+                filterZone.style.top = `${filterTop}px`;
+                filterZone.style.height = `${filterHeight}px`;
+                sectionPattern.appendChild(filterZone);
+                
+                // Filtre etiketi
+                const filterLabel = document.createElement('div');
+                filterLabel.className = 'depth-mark';
+                filterLabel.style.top = `${filterTop}px`;
+                filterLabel.innerHTML = `<span class="depth-label">${depth}-${depth+4}m</span>`;
+                sectionPattern.appendChild(filterLabel);
+            });
+            
             // Katmanları çiz
             layers.forEach((layer, index) => {
                 const layerHeight = (layer.endDepth - layer.startDepth) * scaleFactor;
@@ -457,7 +480,6 @@
                 legendItem.innerHTML = `
                     <div><strong>${layer.name}</strong></div>
                     <div>${layer.startDepth}m - ${layer.endDepth}m</div>
-                    <div>${(layer.endDepth - layer.startDepth).toFixed(1)}m</div>
                 `;
                 sectionLegend.appendChild(legendItem);
                 
@@ -469,29 +491,7 @@
                 patternLayer.style.backgroundImage = layer.pattern.pattern;
                 sectionPattern.appendChild(patternLayer);
                 
-                // 3. Kuyu Logu
-                const wellLayer = document.createElement('div');
-                wellLayer.className = 'well-layer';
-                wellLayer.style.height = `${layerHeight}px`;
-                wellLayer.style.top = `${layerTop}px`;
-                wellLayer.style.backgroundColor = layer.pattern.color;
-                sectionWell.appendChild(wellLayer);
-                
-                // Kuyu logu özellikleri
-                const properties = [
-                    { name: "Porozite", value: getRandomValue(5, 30), unit: "%" },
-                    { name: "Permeabilite", value: getRandomValue(10, 500), unit: "mD" },
-                    { name: "Su Doy.", value: getRandomValue(10, 80), unit: "%" }
-                ];
-                
-                properties.forEach((prop, i) => {
-                    const propDiv = document.createElement('div');
-                    propDiv.className = 'well-property';
-                    propDiv.style.top = `${layerTop + (i * layerHeight/3)}px`;
-                    propDiv.style.height = `${layerHeight/3}px`;
-                    propDiv.innerHTML = `${prop.name}: ${prop.value}${prop.unit}`;
-                    sectionWell.appendChild(propDiv);
-                });
+                // 3. Kuyu Logu (boş bırakıldı)
                 
                 // Derinlik işaretleri
                 const depthMark = document.createElement('div');
@@ -517,7 +517,7 @@
         document.getElementById('saveImageBtn').onclick = function() {
             html2canvas(document.getElementById('sectionContainer')).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'jeolojik-kesit-kuyu-logu.png';
+                link.download = 'jeolojik-kesit.png';
                 link.href = canvas.toDataURL();
                 link.click();
             });
