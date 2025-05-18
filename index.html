@@ -111,7 +111,7 @@
             border-bottom: 1px dashed #ccc;
             font-size: 12px;
         }
-        .pattern-layer, .well-layer {
+        .pattern-layer {
             width: 100%;
             position: absolute;
             left: 0;
@@ -135,6 +135,16 @@
             background-color: rgba(0,0,255,0.1);
             border-top: 1px dashed blue;
             border-bottom: 1px dashed blue;
+        }
+        .filter-label {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 0 5px;
+            font-size: 10px;
+            color: blue;
+            white-space: nowrap;
         }
         .pattern-options {
             display: flex;
@@ -448,23 +458,24 @@
             // Filtre bölgelerini al
             const filterDepths = parseFilterDepths();
             
-            // Filtre bölgelerini çiz
+            // Filtre bölgelerini KUYU LOGUNA çiz
             filterDepths.forEach(depth => {
                 const filterTop = depth * scaleFactor;
                 const filterHeight = 4 * scaleFactor;
                 
+                // Filtre bölgesi
                 const filterZone = document.createElement('div');
                 filterZone.className = 'filter-zone';
                 filterZone.style.top = `${filterTop}px`;
                 filterZone.style.height = `${filterHeight}px`;
-                sectionPattern.appendChild(filterZone);
+                sectionWell.appendChild(filterZone);
                 
                 // Filtre etiketi
                 const filterLabel = document.createElement('div');
-                filterLabel.className = 'depth-mark';
-                filterLabel.style.top = `${filterTop}px`;
-                filterLabel.innerHTML = `<span class="depth-label">${depth}-${depth+4}m</span>`;
-                sectionPattern.appendChild(filterLabel);
+                filterLabel.className = 'filter-label';
+                filterLabel.style.top = `${filterTop + filterHeight/2}px`;
+                filterLabel.innerHTML = `${depth}-${depth+4}m`;
+                sectionWell.appendChild(filterLabel);
             });
             
             // Katmanları çiz
@@ -491,8 +502,6 @@
                 patternLayer.style.backgroundImage = layer.pattern.pattern;
                 sectionPattern.appendChild(patternLayer);
                 
-                // 3. Kuyu Logu (boş bırakıldı)
-                
                 // Derinlik işaretleri
                 const depthMark = document.createElement('div');
                 depthMark.className = 'depth-mark';
@@ -517,7 +526,7 @@
         document.getElementById('saveImageBtn').onclick = function() {
             html2canvas(document.getElementById('sectionContainer')).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'jeolojik-kesit.png';
+                link.download = 'jeolojik-kesit-ve-filtreler.png';
                 link.href = canvas.toDataURL();
                 link.click();
             });
