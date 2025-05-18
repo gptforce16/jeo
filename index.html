@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeolojik Kesit ve Kuyu Logu Oluşturucu</title>
+    <title>Jeolojik Kesit ve Kuyu Logu</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
@@ -84,6 +84,15 @@
             border-right: 1px solid #000;
             position: relative;
         }
+        .section-pattern {
+            flex-grow: 1;
+            position: relative;
+            border-right: 1px solid #000;
+        }
+        .section-well {
+            width: 200px;
+            position: relative;
+        }
         .legend-item {
             position: absolute;
             width: 100%;
@@ -95,15 +104,6 @@
             box-sizing: border-box;
             padding: 0 5px;
             border-bottom: 1px dashed #ccc;
-        }
-        .section-pattern {
-            flex-grow: 1;
-            position: relative;
-            border-right: 1px solid #000;
-        }
-        .section-well {
-            width: 200px;
-            position: relative;
         }
         .pattern-layer, .well-layer {
             width: 100%;
@@ -118,12 +118,6 @@
             text-align: center;
             font-size: 12px;
         }
-        .depth-label {
-            background-color: white;
-            padding: 0 5px;
-            position: relative;
-            top: -10px;
-        }
         .well-mark {
             position: absolute;
             left: 50%;
@@ -132,81 +126,9 @@
             text-align: center;
             font-size: 12px;
         }
-        .well-label {
+        .depth-label, .well-label {
             background-color: white;
             padding: 0 5px;
-        }
-        .delete-btn {
-            background-color: #f44336;
-        }
-        .edit-btn {
-            background-color: #2196F3;
-        }
-        .save-btn {
-            background-color: #ff9800;
-        }
-        .delete-btn:hover {
-            background-color: #d32f2f;
-        }
-        .edit-btn:hover {
-            background-color: #0b7dda;
-        }
-        .save-btn:hover {
-            background-color: #e68a00;
-        }
-        .pattern-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 5px;
-        }
-        .pattern-option {
-            width: 50px;
-            height: 50px;
-            border: 1px solid #ddd;
-            cursor: pointer;
-        }
-        .pattern-option.selected {
-            border: 2px solid #4CAF50;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 5px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: black;
-        }
-        .section-wrapper {
-            position: relative;
-        }
-        .save-section {
-            margin-top: 10px;
         }
         .well-property {
             position: absolute;
@@ -215,6 +137,41 @@
             font-size: 12px;
             border: 1px solid #ccc;
             box-sizing: border-box;
+        }
+        .delete-btn { background-color: #f44336; }
+        .edit-btn { background-color: #2196F3; }
+        .save-btn { background-color: #ff9800; }
+        .delete-btn:hover { background-color: #d32f2f; }
+        .edit-btn:hover { background-color: #0b7dda; }
+        .save-btn:hover { background-color: #e68a00; }
+
+        /* Mobil responsive tasarım */
+        @media (max-width: 768px) {
+            .section-container {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 15px;
+            }
+            .section-legend {
+                width: 120px;
+                flex-shrink: 0;
+            }
+            .section-pattern {
+                min-width: 250px;
+                flex-shrink: 0;
+            }
+            .section-well {
+                width: 180px;
+                flex-shrink: 0;
+            }
+            /* Kaydırma çubuğunu gizle */
+            .section-container::-webkit-scrollbar {
+                display: none;
+            }
+            .layer-form {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -237,169 +194,49 @@
                     <label for="endDepth">Bitiş Derinliği (m)</label>
                     <input type="number" id="endDepth" placeholder="-" min="0" step="0.1">
                 </div>
-                <div class="form-group">
-                    <label>Kayaç Deseni</label>
-                    <div class="pattern-options" id="patternOptions">
-                        <!-- Desenler JavaScript ile eklenecek -->
-                    </div>
-                </div>
                 <button id="addLayerBtn">Katman Ekle</button>
-                <button id="updateLayerBtn" style="display:none;">Güncelle</button>
-                <button id="cancelEditBtn" style="display:none;">İptal</button>
             </div>
             
             <div class="layer-list" id="layerList">
                 <h3>Eklenen Katmanlar</h3>
-                <!-- Katmanlar buraya eklenecek -->
             </div>
         </div>
         
         <div class="output-section">
             <h2>Jeolojik Kesit ve Kuyu Logu</h2>
             <button id="generateSectionBtn">Kesit Oluştur</button>
-            <div class="section-wrapper" id="sectionWrapper">
-                <div class="section-container" id="sectionContainer">
-                    <div class="section-legend" id="sectionLegend"></div>
-                    <div class="section-pattern" id="sectionPattern"></div>
-                    <div class="section-well" id="sectionWell"></div>
-                </div>
-                <div class="save-section" id="saveSection" style="display:none;">
-                    <button id="saveImageBtn" class="save-btn">Görüntüyü Kaydet</button>
-                </div>
+            <div class="section-container" id="sectionContainer">
+                <div class="section-legend" id="sectionLegend"></div>
+                <div class="section-pattern" id="sectionPattern"></div>
+                <div class="section-well" id="sectionWell"></div>
+            </div>
+            <div class="save-section" id="saveSection" style="display:none;">
+                <button id="saveImageBtn" class="save-btn">Görüntüyü Kaydet</button>
             </div>
         </div>
     </div>
 
-    <div id="patternModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Kayaç Deseni Seçimi</h2>
-            <div class="pattern-options" id="modalPatternOptions"></div>
-        </div>
-    </div>
-
     <script>
-        // Genişletilmiş desen tanımları (30 farklı desen)
+        // Desen tanımları
         const patterns = [
-            { name: "Kumtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"2\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23d2b48c\"/></svg>')" },
-            { name: "Kiltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a0522d\" opacity=\"0.3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Kireçtaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5dc\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%238b4513\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Konglomera", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23cd853f\"/><circle cx=\"2\" cy=\"2\" r=\"1.5\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"2\" r=\"1\" fill=\"%238b4513\"/><circle cx=\"3\" cy=\"5\" r=\"0.8\" fill=\"%238b4513\"/><circle cx=\"6\" cy=\"6\" r=\"1.2\" fill=\"%238b4513\"/></svg>')" },
-            { name: "Kum", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f4a460\"/><circle cx=\"1\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"4\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"7\" cy=\"1\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"2\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"5\" cy=\"4\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/><circle cx=\"6\" cy=\"7\" r=\"0.5\" fill=\"%23d2691e\"/></svg>')" },
-            { name: "Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23deb887\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Marn", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23696969\" stroke-width=\"0.5\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Bazalt", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23222222\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23555\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23444\"/></svg>')" },
-            { name: "Granit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23996633\"/><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23cc9966\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23cc9966\"/><circle cx=\"3\" cy=\"7\" r=\"0.6\" fill=\"%23cc9966\"/><circle cx=\"6\" cy=\"6\" r=\"0.9\" fill=\"%23cc9966\"/></svg>')" },
-            { name: "Andezit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><path d=\"M2,2 L6,2 L6,6 L2,6 Z\" fill=\"none\" stroke=\"%23999999\" stroke-width=\"0.5\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23777777\"/></svg>')" },
-            { name: "Diyabaz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23333333\"/><path d=\"M1,1 L7,7 M1,7 L7,1\" stroke=\"%23555555\" stroke-width=\"0.7\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23555555\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Gnays", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,0 L8,8 M0,4 L8,4 M0,8 L8,0\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/></svg>')" },
-            { name: "Mikaşist", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23b3b3b3\"/><path d=\"M0,0 L8,8 M0,2 L8,10 M0,4 L8,12\" stroke=\"%23ffffff\" stroke-width=\"0.5\" transform=\"translate(0,-2)\"/></svg>')" },
-            { name: "Kuvarsit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><circle cx=\"4\" cy=\"4\" r=\"2\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Mermer", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23ffffff\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%234d4d4d\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23666666\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.6\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.5\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')" },
-            { name: "Kömür", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%231a1a1a\"/><path d=\"M2,2 L6,2 L5,6 L3,6 Z\" fill=\"%23333333\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"%23222222\"/></svg>')" },
-            { name: "Jips", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f0f0f0\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23cccccc\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23cccccc\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Anhidrit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6e6\"/><path d=\"M0,0 L8,8 M0,8 L8,0\" stroke=\"%23b3b3b3\" stroke-width=\"0.8\"/><path d=\"M4,0 L4,8 M0,4 L8,4\" stroke=\"%23b3b3b3\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Tuz", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23f5f5f5\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%23dddddd\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Kalker", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23e6e6fa\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"2\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"4\" cy=\"4\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"2\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/><circle cx=\"6\" cy=\"6\" r=\"0.5\" fill=\"%23b0c4de\"/></svg>')" },
-            { name: "Dolomit", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3e6\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.8\"/><circle cx=\"4\" cy=\"4\" r=\"1\" fill=\"none\" stroke=\"%239999cc\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Killi Şeyl", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23808080\"/><path d=\"M0,1 L8,1 M0,3 L8,3 M0,5 L8,5 M0,7 L8,7\" stroke=\"%23a0a0a0\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Silt Taşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23c0c0c0\"/><circle cx=\"2\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"2\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"4\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"2\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"6\" r=\"0.3\" fill=\"%23999999\"/></svg>')" },
-            { name: "Kumlu Kil", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d2b48c\"/><path d=\"M0,2 L8,2 M0,4 L8,4 M0,6 L8,6\" stroke=\"%23a0522d\" stroke-width=\"0.5\"/><circle cx=\"2\" cy=\"3\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"6\" cy=\"5\" r=\"0.3\" fill=\"%23a0522d\"/><circle cx=\"4\" cy=\"7\" r=\"0.3\" fill=\"%23a0522d\"/></svg>')" },
-            { name: "Çakıltaşı", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23a67c52\"/><circle cx=\"2\" cy=\"2\" r=\"1.2\" fill=\"%23875930\"/><circle cx=\"6\" cy=\"3\" r=\"0.8\" fill=\"%23875930\"/><circle cx=\"4\" cy=\"5\" r=\"1\" fill=\"%23875930\"/><circle cx=\"3\" cy=\"7\" r=\"0.7\" fill=\"%23875930\"/><circle cx=\"7\" cy=\"6\" r=\"0.9\" fill=\"%23875930\"/></svg>')" },
-            { name: "Volkanik Tüf", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23666666\"/><circle cx=\"2\" cy=\"2\" r=\"0.7\" fill=\"%23999999\"/><circle cx=\"6\" cy=\"3\" r=\"0.5\" fill=\"%23999999\"/><circle cx=\"4\" cy=\"5\" r=\"0.6\" fill=\"%23999999\"/><circle cx=\"3\" cy=\"7\" r=\"0.4\" fill=\"%23999999\"/><circle cx=\"7\" cy=\"6\" r=\"0.8\" fill=\"%23999999\"/></svg>')" },
-            { name: "Obsidyen", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23000000\"/><path d=\"M1,1 L7,1 L7,7 L1,7 Z\" fill=\"none\" stroke=\"%23333333\" stroke-width=\"0.8\"/><path d=\"M2,2 L6,6 M2,6 L6,2\" stroke=\"%23333333\" stroke-width=\"0.5\"/></svg>')" },
-            { name: "Pomza", pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><rect width=\"8\" height=\"8\" fill=\"%23d3d3d3\"/><circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"2\" r=\"0.8\" fill=\"%23ffffff\"/><circle cx=\"4\" cy=\"4\" r=\"0.6\" fill=\"%23ffffff\"/><circle cx=\"2\" cy=\"6\" r=\"0.7\" fill=\"%23ffffff\"/><circle cx=\"6\" cy=\"6\" r=\"0.4\" fill=\"%23ffffff\"/></svg>')" }
+            { name: "Kumtaşı", color: "#d2b48c" },
+            { name: "Kiltaşı", color: "#a0522d" },
+            { name: "Kireçtaşı", color: "#f5f5dc" },
+            { name: "Konglomera", color: "#cd853f" },
+            { name: "Kum", color: "#f4a460" }
         ];
 
-        // Seçili desen ve düzenleme durumu
-        let selectedPatternIndex = 0;
-        let editingLayerIndex = -1;
-        const patternOptions = document.getElementById('patternOptions');
-        const modalPatternOptions = document.getElementById('modalPatternOptions');
-        const modal = document.getElementById('patternModal');
-        const span = document.getElementsByClassName("close")[0];
-        
-        // Desen seçeneklerini oluştur
-        function createPatternOptions(container, count) {
-            container.innerHTML = '';
-            const showCount = Math.min(count, patterns.length);
-            
-            for (let i = 0; i < showCount; i++) {
-                const pattern = patterns[i];
-                const patternDiv = document.createElement('div');
-                patternDiv.className = `pattern-option ${i === selectedPatternIndex ? 'selected' : ''}`;
-                patternDiv.title = pattern.name;
-                patternDiv.style.backgroundImage = pattern.pattern;
-                patternDiv.onclick = () => {
-                    document.querySelectorAll(`#${container.id} .pattern-option`).forEach(opt => opt.classList.remove('selected'));
-                    patternDiv.classList.add('selected');
-                    selectedPatternIndex = i;
-                    
-                    if (container.id === 'modalPatternOptions') {
-                        modal.style.display = "none";
-                    }
-                };
-                container.appendChild(patternDiv);
-            }
-            
-            if (patterns.length > count && container.id === 'patternOptions') {
-                const moreDiv = document.createElement('div');
-                moreDiv.className = 'pattern-option';
-                moreDiv.innerHTML = '+';
-                moreDiv.title = "Daha fazla desen göster";
-                moreDiv.style.display = "flex";
-                moreDiv.style.justifyContent = "center";
-                moreDiv.style.alignItems = "center";
-                moreDiv.style.fontSize = "20px";
-                moreDiv.style.backgroundColor = "#f0f0f0";
-                moreDiv.onclick = () => {
-                    createPatternOptions(modalPatternOptions, patterns.length);
-                    modal.style.display = "block";
-                };
-                container.appendChild(moreDiv);
-            }
-        }
-        
-        createPatternOptions(patternOptions, 8);
-        
-        // Modal kapatma
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-        
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
-        
         // Katman listesi
         const layers = [];
         
         // Katman ekleme fonksiyonu
         document.getElementById('addLayerBtn').onclick = function() {
-            addOrUpdateLayer();
-        };
-        
-        // Katman güncelleme fonksiyonu
-        document.getElementById('updateLayerBtn').onclick = function() {
-            addOrUpdateLayer();
-        };
-        
-        // Düzenleme iptal fonksiyonu
-        document.getElementById('cancelEditBtn').onclick = function() {
-            cancelEdit();
-        };
-        
-        function addOrUpdateLayer() {
             const layerName = document.getElementById('layerName').value;
             const startDepth = parseFloat(document.getElementById('startDepth').value);
             const endDepth = parseFloat(document.getElementById('endDepth').value);
             
             if (!layerName || isNaN(startDepth) || isNaN(endDepth) || endDepth <= startDepth) {
-                alert("Lütfen geçerli katman bilgileri girin (Başlangıç derinliği bitişten küçük olmalı)");
+                alert("Lütfen geçerli katman bilgileri girin");
                 return;
             }
             
@@ -407,41 +244,17 @@
                 name: layerName,
                 startDepth: startDepth,
                 endDepth: endDepth,
-                pattern: patterns[selectedPatternIndex]
+                pattern: patterns[layers.length % patterns.length] // Döngüsel desen seçimi
             };
             
-            if (editingLayerIndex >= 0) {
-                // Güncelleme modunda
-                layers[editingLayerIndex] = layer;
-                cancelEdit();
-            } else {
-                // Yeni ekleme modunda
-                layers.push(layer);
-            }
-            
+            layers.push(layer);
             updateLayerList();
             
             // Formu temizle
             document.getElementById('layerName').value = '';
             document.getElementById('startDepth').value = endDepth;
             document.getElementById('endDepth').value = '';
-            selectedPatternIndex = 0;
-            createPatternOptions(patternOptions, 8);
-        }
-        
-        function cancelEdit() {
-            editingLayerIndex = -1;
-            document.getElementById('addLayerBtn').style.display = 'inline-block';
-            document.getElementById('updateLayerBtn').style.display = 'none';
-            document.getElementById('cancelEditBtn').style.display = 'none';
-            
-            // Formu temizle
-            document.getElementById('layerName').value = '';
-            document.getElementById('startDepth').value = '';
-            document.getElementById('endDepth').value = '';
-            selectedPatternIndex = 0;
-            createPatternOptions(patternOptions, 8);
-        }
+        };
         
         // Katman listesini güncelle
         function updateLayerList() {
@@ -459,11 +272,9 @@
                 layerItem.innerHTML = `
                     <div class="layer-info">
                         <strong>${layer.name}</strong> - 
-                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m) - 
-                        ${layer.pattern.name}
+                        ${layer.startDepth}m - ${layer.endDepth}m
                     </div>
                     <div class="layer-actions">
-                        <button class="edit-btn" data-index="${index}">Düzenle</button>
                         <button class="delete-btn" data-index="${index}">Sil</button>
                     </div>
                 `;
@@ -476,79 +287,13 @@
                     const index = parseInt(this.getAttribute('data-index'));
                     layers.splice(index, 1);
                     updateLayerList();
-                    
-                    if (editingLayerIndex === index) {
-                        cancelEdit();
-                    } else if (editingLayerIndex > index) {
-                        editingLayerIndex--;
-                    }
-                };
-            });
-            
-            // Düzenle butonlarına event ekle
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    const layer = layers[index];
-                    
-                    // Formu doldur
-                    document.getElementById('layerName').value = layer.name;
-                    document.getElementById('startDepth').value = layer.startDepth;
-                    document.getElementById('endDepth').value = layer.endDepth;
-                    
-                    // Deseni seç
-                    selectedPatternIndex = patterns.findIndex(p => p.name === layer.pattern.name);
-                    createPatternOptions(patternOptions, 8);
-                    
-                    // Düzenleme moduna geç
-                    editingLayerIndex = index;
-                    document.getElementById('addLayerBtn').style.display = 'none';
-                    document.getElementById('updateLayerBtn').style.display = 'inline-block';
-                    document.getElementById('cancelEditBtn').style.display = 'inline-block';
                 };
             });
         }
         
-        // Kuyu logu için rastgele özellik değeri üret
-        function getRandomWellProperty() {
-            return (Math.random() * 100).toFixed(1);
-        }
-        
-        // Kayaç türüne göre renk belirle
-        function getWellColor(rockType) {
-            const colors = {
-                "Kumtaşı": "#d2b48c",
-                "Kiltaşı": "#a0522d",
-                "Kireçtaşı": "#f5f5dc",
-                "Konglomera": "#cd853f",
-                "Kum": "#f4a460",
-                "Kil": "#deb887",
-                "Marn": "#d3d3d3",
-                "Bazalt": "#222222",
-                "Granit": "#996633",
-                "Andezit": "#666666",
-                "Diyabaz": "#333333",
-                "Gnays": "#808080",
-                "Mikaşist": "#b3b3b3",
-                "Kuvarsit": "#e6e6e6",
-                "Mermer": "#ffffff",
-                "Şeyl": "#4d4d4d",
-                "Tüf": "#a67c52",
-                "Kömür": "#1a1a1a",
-                "Jips": "#f0f0f0",
-                "Anhidrit": "#e6e6e6",
-                "Tuz": "#f5f5f5",
-                "Kalker": "#e6e6fa",
-                "Dolomit": "#d3d3e6",
-                "Killi Şeyl": "#808080",
-                "Silt Taşı": "#c0c0c0",
-                "Kumlu Kil": "#d2b48c",
-                "Çakıltaşı": "#a67c52",
-                "Volkanik Tüf": "#666666",
-                "Obsidyen": "#000000",
-                "Pomza": "#d3d3d3"
-            };
-            return colors[rockType] || "#cccccc";
+        // Kuyu logu için rastgele değer üret
+        function getRandomValue(min, max) {
+            return (Math.random() * (max - min) + min).toFixed(1);
         }
         
         // Kesit oluşturma fonksiyonu
@@ -569,68 +314,61 @@
             sectionPattern.innerHTML = '';
             sectionWell.innerHTML = '';
             
-            // Kesit yüksekliğini belirle (en alttaki katmanın bitiş derinliği)
-            const sectionHeight = layers[layers.length - 1].endDepth;
-            const scaleFactor = 6; // Ölçek faktörü (piksel/metre)
+            // Ölçek faktörü (piksel/metre)
+            const scaleFactor = 20;
+            const sectionHeight = layers[layers.length - 1].endDepth * scaleFactor;
             
-            sectionPattern.style.height = `${sectionHeight * scaleFactor}px`;
-            sectionLegend.style.height = `${sectionHeight * scaleFactor}px`;
-            sectionWell.style.height = `${sectionHeight * scaleFactor}px`;
+            sectionPattern.style.height = `${sectionHeight}px`;
+            sectionLegend.style.height = `${sectionHeight}px`;
+            sectionWell.style.height = `${sectionHeight}px`;
             
             // Katmanları çiz
             layers.forEach((layer, index) => {
                 const layerHeight = (layer.endDepth - layer.startDepth) * scaleFactor;
                 const layerTop = layer.startDepth * scaleFactor;
                 
-                // Lejant kısmı
+                // 1. Lejant Kısmı
                 const legendItem = document.createElement('div');
                 legendItem.className = 'legend-item';
                 legendItem.style.height = `${layerHeight}px`;
                 legendItem.style.top = `${layerTop}px`;
                 legendItem.innerHTML = `
                     <div><strong>${layer.name}</strong></div>
-                    <div>${(layer.endDepth - layer.startDepth).toFixed(1)}m</div>
+                    <div>${layer.startDepth}m - ${layer.endDepth}m</div>
                 `;
                 sectionLegend.appendChild(legendItem);
                 
-                // Jeolojik kesit kısmı
+                // 2. Jeolojik Kesit
                 const patternLayer = document.createElement('div');
                 patternLayer.className = 'pattern-layer';
                 patternLayer.style.height = `${layerHeight}px`;
                 patternLayer.style.top = `${layerTop}px`;
-                patternLayer.style.backgroundImage = layer.pattern.pattern;
-                patternLayer.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                patternLayer.style.backgroundColor = layer.pattern.color;
                 sectionPattern.appendChild(patternLayer);
                 
-                // Kuyu logu kısmı
+                // 3. Kuyu Logu
                 const wellLayer = document.createElement('div');
                 wellLayer.className = 'well-layer';
                 wellLayer.style.height = `${layerHeight}px`;
                 wellLayer.style.top = `${layerTop}px`;
-                wellLayer.style.backgroundColor = getWellColor(layer.name);
+                wellLayer.style.backgroundColor = layer.pattern.color;
                 sectionWell.appendChild(wellLayer);
                 
                 // Kuyu logu özellikleri
-                const wellProperty1 = document.createElement('div');
-                wellProperty1.className = 'well-property';
-                wellProperty1.style.top = `${layerTop}px`;
-                wellProperty1.style.height = `${layerHeight/3}px`;
-                wellProperty1.innerHTML = `Porozite: ${getRandomWellProperty()}%`;
-                sectionWell.appendChild(wellProperty1);
+                const properties = [
+                    { name: "Porozite", value: getRandomValue(5, 30), unit: "%" },
+                    { name: "Permeabilite", value: getRandomValue(10, 500), unit: "mD" },
+                    { name: "Su Doy.", value: getRandomValue(10, 80), unit: "%" }
+                ];
                 
-                const wellProperty2 = document.createElement('div');
-                wellProperty2.className = 'well-property';
-                wellProperty2.style.top = `${layerTop + layerHeight/3}px`;
-                wellProperty2.style.height = `${layerHeight/3}px`;
-                wellProperty2.innerHTML = `Permeabilite: ${getRandomWellProperty()} mD`;
-                sectionWell.appendChild(wellProperty2);
-                
-                const wellProperty3 = document.createElement('div');
-                wellProperty3.className = 'well-property';
-                wellProperty3.style.top = `${layerTop + 2*layerHeight/3}px`;
-                wellProperty3.style.height = `${layerHeight/3}px`;
-                wellProperty3.innerHTML = `Su Doygunluğu: ${getRandomWellProperty()}%`;
-                sectionWell.appendChild(wellProperty3);
+                properties.forEach((prop, i) => {
+                    const propDiv = document.createElement('div');
+                    propDiv.className = 'well-property';
+                    propDiv.style.top = `${layerTop + (i * layerHeight/3)}px`;
+                    propDiv.style.height = `${layerHeight/3}px`;
+                    propDiv.innerHTML = `${prop.name}: ${prop.value}${prop.unit}`;
+                    sectionWell.appendChild(propDiv);
+                });
                 
                 // Derinlik işaretleri
                 const depthMark = document.createElement('div');
@@ -639,36 +377,25 @@
                 depthMark.innerHTML = `<span class="depth-label">${layer.startDepth}m</span>`;
                 sectionPattern.appendChild(depthMark);
                 
-                // Son katmanın bitiş derinliğini de ekle
+                // Son katmanın bitiş derinliği
                 if (index === layers.length - 1) {
-                    const endDepthMark = document.createElement('div');
-                    endDepthMark.className = 'depth-mark';
-                    endDepthMark.style.top = `${(layer.endDepth) * scaleFactor}px`;
-                    endDepthMark.innerHTML = `<span class="depth-label">${layer.endDepth}m</span>`;
-                    sectionPattern.appendChild(endDepthMark);
-                    
-                    const endWellMark = document.createElement('div');
-                    endWellMark.className = 'well-mark';
-                    endWellMark.style.top = `${(layer.endDepth) * scaleFactor}px`;
-                    endWellMark.innerHTML = `<span class="well-label">${layer.endDepth}m</span>`;
-                    sectionWell.appendChild(endWellMark);
+                    const endMark = document.createElement('div');
+                    endMark.className = 'depth-mark';
+                    endMark.style.top = `${layer.endDepth * scaleFactor}px`;
+                    endMark.innerHTML = `<span class="depth-label">${layer.endDepth}m</span>`;
+                    sectionPattern.appendChild(endMark);
                 }
             });
             
-            // Kaydet butonunu göster
             document.getElementById('saveSection').style.display = 'block';
         };
         
-        // Görüntüyü kaydetme fonksiyonu
+        // Görüntüyü kaydet
         document.getElementById('saveImageBtn').onclick = function() {
-            const sectionWrapper = document.getElementById('sectionWrapper');
-            
-            // Kesit bölümünü görüntüye dönüştür
-            html2canvas(sectionWrapper).then(canvas => {
-                // Görüntüyü indirme bağlantısı oluştur
+            html2canvas(document.getElementById('sectionContainer')).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'jeolojik-kesit-ve-kuyu-logu.png';
-                link.href = canvas.toDataURL('image/png');
+                link.download = 'jeolojik-kesit-kuyu-logu.png';
+                link.href = canvas.toDataURL();
                 link.click();
             });
         };
