@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeolojik Kesit Oluşturucu</title>
+    <title>Jeolojik Kesit ve Kuyu Logu Oluşturucu</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
@@ -77,6 +77,7 @@
             padding: 10px;
             border: 1px solid #ddd;
             position: relative;
+            gap: 10px;
         }
         .section-legend {
             width: 150px;
@@ -98,8 +99,13 @@
         .section-pattern {
             flex-grow: 1;
             position: relative;
+            border-right: 1px solid #000;
         }
-        .pattern-layer {
+        .section-well {
+            width: 200px;
+            position: relative;
+        }
+        .pattern-layer, .well-layer {
             width: 100%;
             position: absolute;
             left: 0;
@@ -117,6 +123,18 @@
             padding: 0 5px;
             position: relative;
             top: -10px;
+        }
+        .well-mark {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            font-size: 12px;
+        }
+        .well-label {
+            background-color: white;
+            padding: 0 5px;
         }
         .delete-btn {
             background-color: #f44336;
@@ -190,11 +208,19 @@
         .save-section {
             margin-top: 10px;
         }
+        .well-property {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Jeolojik Kesit Oluşturucu</h1>
+        <h1>Jeolojik Kesit ve Kuyu Logu Oluşturucu</h1>
         
         <div class="input-section">
             <h2>Katman Bilgileri</h2>
@@ -229,12 +255,13 @@
         </div>
         
         <div class="output-section">
-            <h2>Jeolojik Kesit</h2>
+            <h2>Jeolojik Kesit ve Kuyu Logu</h2>
             <button id="generateSectionBtn">Kesit Oluştur</button>
             <div class="section-wrapper" id="sectionWrapper">
                 <div class="section-container" id="sectionContainer">
                     <div class="section-legend" id="sectionLegend"></div>
                     <div class="section-pattern" id="sectionPattern"></div>
+                    <div class="section-well" id="sectionWell"></div>
                 </div>
                 <div class="save-section" id="saveSection" style="display:none;">
                     <button id="saveImageBtn" class="save-btn">Görüntüyü Kaydet</button>
@@ -482,6 +509,48 @@
             });
         }
         
+        // Kuyu logu için rastgele özellik değeri üret
+        function getRandomWellProperty() {
+            return (Math.random() * 100).toFixed(1);
+        }
+        
+        // Kayaç türüne göre renk belirle
+        function getWellColor(rockType) {
+            const colors = {
+                "Kumtaşı": "#d2b48c",
+                "Kiltaşı": "#a0522d",
+                "Kireçtaşı": "#f5f5dc",
+                "Konglomera": "#cd853f",
+                "Kum": "#f4a460",
+                "Kil": "#deb887",
+                "Marn": "#d3d3d3",
+                "Bazalt": "#222222",
+                "Granit": "#996633",
+                "Andezit": "#666666",
+                "Diyabaz": "#333333",
+                "Gnays": "#808080",
+                "Mikaşist": "#b3b3b3",
+                "Kuvarsit": "#e6e6e6",
+                "Mermer": "#ffffff",
+                "Şeyl": "#4d4d4d",
+                "Tüf": "#a67c52",
+                "Kömür": "#1a1a1a",
+                "Jips": "#f0f0f0",
+                "Anhidrit": "#e6e6e6",
+                "Tuz": "#f5f5f5",
+                "Kalker": "#e6e6fa",
+                "Dolomit": "#d3d3e6",
+                "Killi Şeyl": "#808080",
+                "Silt Taşı": "#c0c0c0",
+                "Kumlu Kil": "#d2b48c",
+                "Çakıltaşı": "#a67c52",
+                "Volkanik Tüf": "#666666",
+                "Obsidyen": "#000000",
+                "Pomza": "#d3d3d3"
+            };
+            return colors[rockType] || "#cccccc";
+        }
+        
         // Kesit oluşturma fonksiyonu
         document.getElementById('generateSectionBtn').onclick = function() {
             if (layers.length === 0) {
@@ -494,19 +563,24 @@
             
             const sectionLegend = document.getElementById('sectionLegend');
             const sectionPattern = document.getElementById('sectionPattern');
+            const sectionWell = document.getElementById('sectionWell');
             
             sectionLegend.innerHTML = '';
             sectionPattern.innerHTML = '';
+            sectionWell.innerHTML = '';
             
             // Kesit yüksekliğini belirle (en alttaki katmanın bitiş derinliği)
             const sectionHeight = layers[layers.length - 1].endDepth;
-            sectionPattern.style.height = `${sectionHeight * 6}px`;
-            sectionLegend.style.height = `${sectionHeight * 6}px`;
+            const scaleFactor = 6; // Ölçek faktörü (piksel/metre)
+            
+            sectionPattern.style.height = `${sectionHeight * scaleFactor}px`;
+            sectionLegend.style.height = `${sectionHeight * scaleFactor}px`;
+            sectionWell.style.height = `${sectionHeight * scaleFactor}px`;
             
             // Katmanları çiz
             layers.forEach((layer, index) => {
-                const layerHeight = (layer.endDepth - layer.startDepth) * 6;
-                const layerTop = layer.startDepth * 6;
+                const layerHeight = (layer.endDepth - layer.startDepth) * scaleFactor;
+                const layerTop = layer.startDepth * scaleFactor;
                 
                 // Lejant kısmı
                 const legendItem = document.createElement('div');
@@ -519,7 +593,7 @@
                 `;
                 sectionLegend.appendChild(legendItem);
                 
-                // Desen kısmı
+                // Jeolojik kesit kısmı
                 const patternLayer = document.createElement('div');
                 patternLayer.className = 'pattern-layer';
                 patternLayer.style.height = `${layerHeight}px`;
@@ -527,6 +601,36 @@
                 patternLayer.style.backgroundImage = layer.pattern.pattern;
                 patternLayer.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
                 sectionPattern.appendChild(patternLayer);
+                
+                // Kuyu logu kısmı
+                const wellLayer = document.createElement('div');
+                wellLayer.className = 'well-layer';
+                wellLayer.style.height = `${layerHeight}px`;
+                wellLayer.style.top = `${layerTop}px`;
+                wellLayer.style.backgroundColor = getWellColor(layer.name);
+                sectionWell.appendChild(wellLayer);
+                
+                // Kuyu logu özellikleri
+                const wellProperty1 = document.createElement('div');
+                wellProperty1.className = 'well-property';
+                wellProperty1.style.top = `${layerTop}px`;
+                wellProperty1.style.height = `${layerHeight/3}px`;
+                wellProperty1.innerHTML = `Porozite: ${getRandomWellProperty()}%`;
+                sectionWell.appendChild(wellProperty1);
+                
+                const wellProperty2 = document.createElement('div');
+                wellProperty2.className = 'well-property';
+                wellProperty2.style.top = `${layerTop + layerHeight/3}px`;
+                wellProperty2.style.height = `${layerHeight/3}px`;
+                wellProperty2.innerHTML = `Permeabilite: ${getRandomWellProperty()} mD`;
+                sectionWell.appendChild(wellProperty2);
+                
+                const wellProperty3 = document.createElement('div');
+                wellProperty3.className = 'well-property';
+                wellProperty3.style.top = `${layerTop + 2*layerHeight/3}px`;
+                wellProperty3.style.height = `${layerHeight/3}px`;
+                wellProperty3.innerHTML = `Su Doygunluğu: ${getRandomWellProperty()}%`;
+                sectionWell.appendChild(wellProperty3);
                 
                 // Derinlik işaretleri
                 const depthMark = document.createElement('div');
@@ -539,9 +643,15 @@
                 if (index === layers.length - 1) {
                     const endDepthMark = document.createElement('div');
                     endDepthMark.className = 'depth-mark';
-                    endDepthMark.style.top = `${(layer.endDepth) * 6}px`;
+                    endDepthMark.style.top = `${(layer.endDepth) * scaleFactor}px`;
                     endDepthMark.innerHTML = `<span class="depth-label">${layer.endDepth}m</span>`;
                     sectionPattern.appendChild(endDepthMark);
+                    
+                    const endWellMark = document.createElement('div');
+                    endWellMark.className = 'well-mark';
+                    endWellMark.style.top = `${(layer.endDepth) * scaleFactor}px`;
+                    endWellMark.innerHTML = `<span class="well-label">${layer.endDepth}m</span>`;
+                    sectionWell.appendChild(endWellMark);
                 }
             });
             
@@ -557,7 +667,7 @@
             html2canvas(sectionWrapper).then(canvas => {
                 // Görüntüyü indirme bağlantısı oluştur
                 const link = document.createElement('a');
-                link.download = 'jeolojik-kesit.png';
+                link.download = 'jeolojik-kesit-ve-kuyu-logu.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
