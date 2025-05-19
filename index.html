@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeolojik Kesit ve Filtre Analizi</title>
+    <title>Kuyu Logu Oluşturucu</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
@@ -202,7 +202,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Jeolojik Kesit ve Filtre Analizi</h1>
+        <h1>Kuyu Logu Oluşturucu</h1>
         
         <div class="input-section">
             <h2>Katman Bilgileri</h2>
@@ -213,11 +213,11 @@
                 </div>
                 <div class="form-group">
                     <label for="startDepth">Başlangıç Derinliği (m)</label>
-                    <input type="number" id="startDepth" placeholder="0" min="0" step="0.1">
+                    <input type="number" id="startDepth" placeholder="-" min="0" step="0.1">
                 </div>
                 <div class="form-group">
                     <label for="endDepth">Bitiş Derinliği (m)</label>
-                    <input type="number" id="endDepth" placeholder="1.0" min="0" step="0.1">
+                    <input type="number" id="endDepth" placeholder="-" min="0" step="0.1">
                 </div>
                 <div class="form-group">
                     <label>Kayaç Deseni</label>
@@ -227,7 +227,7 @@
                 </div>
                 <div class="form-group">
                     <label for="filterDepths">Filtre Yerleri (virgülle ayırın)</label>
-                    <input type="text" id="filterDepths" placeholder="8, 15, 22">
+                    <input type="text" id="filterDepths" placeholder="-">
                 </div>
                 <button id="addLayerBtn">Katman Ekle</button>
                 <button id="updateLayerBtn" style="display:none;">Güncelle</button>
@@ -506,7 +506,7 @@
             sectionWell.innerHTML = '';
             
             // Ölçek faktörü (piksel/metre)
-            const scaleFactor = 20;
+            const scaleFactor = 6;
             const sectionHeight = layers[layers.length - 1].endDepth * scaleFactor;
             
             sectionPattern.style.height = `${sectionHeight}px`;
