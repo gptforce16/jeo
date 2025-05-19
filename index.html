@@ -141,15 +141,16 @@
             border-bottom: 1px dashed blue;
         }
         .filter-label {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: white;
-            padding: 0 5px;
-            font-size: 10px;
-            color: blue;
-            white-space: nowrap;
-        }
+    position: absolute;
+    left: 50%;
+    top: 50%; /* Filtrenin ortasına göre */
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 0 5px;
+    font-size: 10px;
+    color: blue;
+    white-space: nowrap;
+}
         .pattern-options {
             display: flex;
             flex-wrap: wrap;
