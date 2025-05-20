@@ -616,7 +616,7 @@ h3 {
         // Görüntüyü kaydet
         document.getElementById('saveImageBtn').onclick = function () {
     html2canvas(document.getElementById('sectionContainer'), {
-        scale: 2 // Kaliteyi 2 kat artırır (dilerseniz 3 veya daha fazla yapabilirsiniz)
+        scale: 4 // Kaliteyi 2 kat artırır (dilerseniz 3 veya daha fazla yapabilirsiniz)
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = 'jeolojik-kesit-ve-filtreler.png';
