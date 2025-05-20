@@ -309,62 +309,50 @@
         // Desen tanımları
         const patterns = [
   {
-    name: "Toprak",
     color: "rgba(139,69,19,0.4)",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"rgba(139,69,19,0.4)\"/></svg>')"
   },
   {
-    name: "Alüvyon",
     color: "#d3d3d3",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"6\" height=\"6\"><rect width=\"6\" height=\"6\" fill=\"%23d3d3d3\"/><circle cx=\"1\" cy=\"1\" r=\"0.7\" fill=\"%23696969\"/><circle cx=\"4\" cy=\"4\" r=\"0.7\" fill=\"%23696969\"/></svg>')"
   },
   {
-    name: "Kil",
     color: "#a0522d",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\"><path stroke=\"%23a0522d\" stroke-width=\"1\" stroke-dasharray=\"4,2\" d=\"M0 4 L12 4 M0 8 L12 8\"/><path stroke=\"%23a0522d\" stroke-width=\"1\" stroke-dasharray=\"4,2\" d=\"M2 0 L14 0 M2 12 L14 12\"/></svg>')"
   },
   {
-    name: "Kum",
     color: "#b8860b",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"%23fffacd\"/><circle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%23b8860b\"/><circle cx=\"6\" cy=\"6\" r=\"1\" fill=\"%23b8860b\"/></svg>')"
   },
   {
-    name: "Çakıl",
     color: "#808080",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"><rect width=\"10\" height=\"10\" fill=\"%23dcdcdc\"/><circle cx=\"3\" cy=\"3\" r=\"2\" fill=\"%23808080\"/><circle cx=\"7\" cy=\"7\" r=\"2\" fill=\"%23808080\"/></svg>')"
   },
   {
-    name: "Şist",
     color: "#0000cd",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><path d=\"M0 8 L8 0\" stroke=\"%230000cd\" stroke-width=\"2\"/></svg>')"
   },
   {
-    name: "Kireçtaşı",
     color: "#ffffff",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"12\"><rect width=\"24\" height=\"12\" fill=\"%23ffffff\"/><rect x=\"0\" y=\"0\" width=\"8\" height=\"6\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1\"/><rect x=\"8\" y=\"6\" width=\"8\" height=\"6\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1\"/><rect x=\"16\" y=\"0\" width=\"8\" height=\"6\" fill=\"none\" stroke=\"%23000\" stroke-width=\"1\"/></svg>')"
   },
   {
-    name: "Andezit",
     color: "#4b4b4b",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><text x=\"3\" y=\"13\" font-size=\"16\" fill=\"%234b4b4b\">+</text></svg>')"
   },
   {
-    name: "Granit",
     color: "#c71585",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><text x=\"3\" y=\"13\" font-size=\"16\" fill=\"%23c71585\">+</text></svg>')"
   },
   {
-    name: "Volkanit",
     color: "#8b4513",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"><path d=\"M8 10 L5 5 L2 10\" stroke=\"%238b4513\" stroke-width=\"2\" fill=\"none\"/></svg>')"
   },
   {
-    name: "Tüf",
     color: "rgba(0,0,0,0.3)",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" fill=\"rgba(0,0,0,0.3)\"/></svg>')"
   },
   {
-    name: "Metakırıntılı Kayaç",
     color: "#a0522d",
     pattern: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"><path d=\"M10 0 L5 5 L0 0\" stroke=\"%23a0522d\" stroke-width=\"1\"/><circle cx=\"3\" cy=\"7\" r=\"1\" fill=\"%23a0522d\"/><circle cx=\"7\" cy=\"7\" r=\"1\" fill=\"%23a0522d\"/></svg>')"
   }
@@ -479,8 +467,7 @@
                 layerItem.innerHTML = `
                     <div class="layer-info">
                         <strong>${layer.name}</strong> - 
-                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m) - 
-                        ${layer.pattern.name}
+                        ${layer.startDepth}m - ${layer.endDepth}m (${(layer.endDepth - layer.startDepth).toFixed(1)}m)
                     </div>
                     <div class="layer-actions">
                         <button class="edit-btn" data-index="${index}">Düzenle</button>
