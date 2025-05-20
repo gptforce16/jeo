@@ -8,35 +8,32 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            h1, h2, h3 {
-    color: #333; /* Başlık rengi */
-    margin-top: 10px;
-    margin-bottom: 10px;
-    text-align: left; /* Sola yaslama */
-}
-
-h1 {
-    font-size: 28px;
-    color: #2c3e50;
-    margin-top: 20px;
-    margin-bottom: 15px;
-}
-
-h2 {
-    font-size: 22px;
-    color: #34495e;
-    margin-top: 15px;
-    margin-bottom: 10px;
-}
-
-h3 {
-    font-size: 18px;
-    color: #5d6d7e;
-    margin-top: 10px;
-    margin-bottom: 8px;
-}
             margin: 20px;
             line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        h2 {
+            font-size: 22px;
+            color: #34495e;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #5d6d7e;
+            margin-top: 10px;
+            margin-bottom: 8px;
         }
         .container {
             display: flex;
@@ -45,7 +42,7 @@ h3 {
             max-width: 1000px;
             margin: 0 auto;
         }
-        .input-section, .output-section {
+        .input-section, .output-section, .filters-section {
             border: 1px solid #ccc;
             padding: 15px;
             border-radius: 5px;
@@ -62,11 +59,11 @@ h3 {
             flex-direction: column;
         }
         label {
-    margin-bottom: 5px;
-    font-weight: bold;
-    text-align: left;
-    align-self: flex-start;
-}
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-align: left;
+            align-self: flex-start;
+        }
         input, select {
             padding: 8px;
             border: 1px solid #ddd;
@@ -111,7 +108,7 @@ h3 {
             width: 300px;
             overflow-x: hidden;
             overflow-y: visible;
-        -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch;
         }
         .section-legend {
             width: 100px;
@@ -173,16 +170,16 @@ h3 {
             border-bottom: 1px dashed blue;
         }
         .filter-label {
-    position: absolute;
-    left: 50%;
-    top: 50%; /* Filtrenin ortasına göre */
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 0 5px;
-    font-size: 10px;
-    color: blue;
-    white-space: nowrap;
-}
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 0 5px;
+            font-size: 10px;
+            color: blue;
+            white-space: nowrap;
+        }
         .pattern-options {
             display: flex;
             flex-wrap: wrap;
@@ -204,6 +201,19 @@ h3 {
         .delete-btn:hover { background-color: #d32f2f; }
         .edit-btn:hover { background-color: #0b7dda; }
         .save-btn:hover { background-color: #e68a00; }
+
+        /* Filtre listesi stili */
+        .filter-list {
+            margin-top: 15px;
+        }
+        .filter-item {
+            padding: 8px;
+            border: 1px solid #eee;
+            margin-bottom: 5px;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: space-between;
+        }
 
         /* Mobil responsive tasarım */
         @media (max-width: 768px) {
@@ -258,17 +268,30 @@ h3 {
                         <!-- Desenler JavaScript ile eklenecek -->
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="filterDepths">Filtre Yerleri (virgülle ayırın)</label>
-                    <input type="text" id="filterDepths" placeholder="-">
-                </div>
                 <button id="addLayerBtn">Katman Ekle</button>
                 <button id="updateLayerBtn" style="display:none;">Güncelle</button>
                 <button id="cancelEditBtn" style="display:none;">İptal</button>
             </div>
-            
+        </div>
+        
+        <!-- Yeni eklenen Filtreler bölümü -->
+        <div class="filters-section">
+            <h2>Filtre Yerleri</h2>
+            <div class="form-group">
+                <label for="filterDepths">Filtre Derinlikleri (virgülle ayırın)</label>
+                <input type="text" id="filterDepths" placeholder="Örnek: 10.5,15.2,20.0">
+            </div>
+            <button id="addFilterBtn">Filtre Ekle</button>
+            <div class="filter-list" id="filterList">
+                <!-- Filtreler burada listelenecek -->
+            </div>
+        </div>
+        
+        <!-- Katman listesi bölümü -->
+        <div class="input-section">
+            <h2>Eklenen Katmanlar</h2>
             <div class="layer-list" id="layerList">
-                <h3>Eklenen Katmanlar</h3>
+                <!-- Katmanlar burada listelenecek -->
             </div>
         </div>
         
